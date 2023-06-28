@@ -1,0 +1,16 @@
+.hide {
+  display: none;
+}
+
+.topbar {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.topbar_hide {
+  height: 0;
+  width: 0;
+  overflow: hidden;
+}
