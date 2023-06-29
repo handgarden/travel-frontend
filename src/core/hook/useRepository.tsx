@@ -488,7 +488,9 @@ const useDestinationRepository = () => {
       try {
         const response = await repository
           .getHttpClient()
-          .delete<void, AxiosResponse<ResponseTemplate<"ok">>>(`/${id}`);
+          .delete<void, AxiosResponse<ResponseTemplate<"ok">>>(
+            `/destinations/${id}`
+          );
         const data = response.data;
         checkAuthByResponse(data);
         return data;
@@ -565,7 +567,9 @@ const useDescriptionRepository = () => {
       try {
         const response = await repository
           .getHttpClient()
-          .delete<void, AxiosResponse<ResponseTemplate<"ok">>>(`/${id}`);
+          .delete<void, AxiosResponse<ResponseTemplate<"ok">>>(
+            `/descriptions/${id}`
+          );
         const data = response.data;
         checkAuthByResponse(data);
         return data;
@@ -601,7 +605,7 @@ const useFileRepository = () => {
         const response = await repository
           .getHttpClient()
           .delete<void, AxiosResponse<ResponseTemplate<"ok">>>(
-            `/${storeFileName}`
+            `/files/${storeFileName}`
           );
         const data = response.data;
         checkAuthByResponse(data);
@@ -710,7 +714,9 @@ const useJourneyRepository = () => {
       try {
         const response = await repository
           .getHttpClient()
-          .delete<void, AxiosResponse<ResponseTemplate<"ok">>>(`/${id}`);
+          .delete<void, AxiosResponse<ResponseTemplate<"ok">>>(
+            `/journeys/${id}`
+          );
         const data = response.data;
         checkAuthByResponse(data);
         return data;
@@ -757,7 +763,7 @@ const useJourneyRepository = () => {
         const response = await repository
           .getHttpClient()
           .delete<void, AxiosResponse<ResponseTemplate<"ok">>>(
-            `/comments/${id}`
+            `/journeys/comments/${id}`
           );
         const data = response.data;
         checkAuthByResponse(data);
@@ -924,7 +930,9 @@ const usePaymentRepository = () => {
       try {
         const response = await repository
           .getHttpClient()
-          .delete<void, AxiosResponse<ResponseTemplate<"ok">>>(`/${id}`);
+          .delete<void, AxiosResponse<ResponseTemplate<"ok">>>(
+            `/payment/${id}`
+          );
         const data = response.data;
         checkAuthByResponse(data);
         return data;

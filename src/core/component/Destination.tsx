@@ -328,7 +328,12 @@ const ElementImages: React.FC<ElementImagesProps> = ({
     <Space direction="vertical" style={{ width: "100%" }}>
       <Space style={{ width: "100%", flexWrap: "wrap" }}>
         {images.data.map((d) => (
-          <Image key={d} src={`/files/${d}`} width={100} />
+          <Image
+            key={d}
+            src={`${process.env.REACT_APP_API_HOST}/files/${d}`}
+            width={100}
+            crossOrigin="use-credentials"
+          />
         ))}
       </Space>
       <Pagination
