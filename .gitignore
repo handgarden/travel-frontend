@@ -24,3 +24,5 @@ yarn-error.log*
 
 # ... other rules omitted for brevity ...
 /public/tinymce/
+
+.env*
