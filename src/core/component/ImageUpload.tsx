@@ -2,8 +2,6 @@ import { Upload } from "antd";
 import ImgCrop from "antd-img-crop";
 import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 import React, { useMemo, useState } from "react";
-import useRedirectPath from "../hook/useRedirectPath";
-import { useNavigate } from "react-router-dom";
 import useRepository from "../hook/useRepository";
 import { MyUploadFile } from "../../types/File.type";
 import { ResponseTemplate } from "../../types/repository/basic.type";
