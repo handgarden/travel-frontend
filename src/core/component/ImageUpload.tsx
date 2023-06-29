@@ -28,14 +28,24 @@ const ImageUpload: React.FC<Props> = ({
   const [loading, setLoading] = useState<boolean>(false);
 
   const onChange: UploadProps["onChange"] = (data: MyUploadChangeParam) => {
-    console.log(data);
     const file = data.file;
     if (file.status === "uploading") {
       setLoading(true);
     } else {
       setLoading(false);
     }
-    const fileList = data.fileList;
+    let fileList = data.fileList;
+    if (file.response && !file.response.success) {
+      fileList = fileList.map((f) => {
+        if (f.uid !== file.uid) {
+          return f;
+        }
+        return {
+          ...f,
+          status: "error",
+        };
+      });
+    }
     setFileList(fileList);
     return;
   };
