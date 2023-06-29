@@ -76,6 +76,7 @@ const ImageUpload: React.FC<Props> = ({
     <ImgCrop rotationSlider>
       <Upload
         action={`${process.env.REACT_APP_API_HOST}/files`}
+        headers={{ credentials: "include" }}
         accept=".jpg, .jpeg, .png"
         listType="picture-card"
         fileList={fileList}
