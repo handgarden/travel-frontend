@@ -89,6 +89,10 @@ class Repository {
     this.checkAuthFunc = checkAuthFunc;
   }
 
+  public getHttpClient = () => {
+    return this.httpClient;
+  };
+
   public createPost = <
     T,
     J extends Object,
@@ -482,10 +486,9 @@ const useDestinationRepository = () => {
   const deleteDestination = useCallback(
     async (id: number) => {
       try {
-        const response = await axios.delete<
-          void,
-          AxiosResponse<ResponseTemplate<"ok">>
-        >(`/destinations/${id}`);
+        const response = await repository
+          .getHttpClient()
+          .delete<void, AxiosResponse<ResponseTemplate<"ok">>>(`/${id}`);
         const data = response.data;
         checkAuthByResponse(data);
         return data;
@@ -493,7 +496,7 @@ const useDestinationRepository = () => {
         return serverErrorTemplateGenerator<"ok">();
       }
     },
-    [checkAuthByResponse]
+    [checkAuthByResponse, repository]
   );
 
   const getDescriptions = useMemo(() => {
@@ -560,10 +563,9 @@ const useDescriptionRepository = () => {
   const deleteDescription = useCallback(
     async (id: number) => {
       try {
-        const response = await axios.delete<
-          void,
-          AxiosResponse<ResponseTemplate<"ok">>
-        >(`/descriptions/${id}`);
+        const response = await repository
+          .getHttpClient()
+          .delete<void, AxiosResponse<ResponseTemplate<"ok">>>(`/${id}`);
         const data = response.data;
         checkAuthByResponse(data);
         return data;
@@ -571,7 +573,7 @@ const useDescriptionRepository = () => {
         return serverErrorTemplateGenerator<"ok">();
       }
     },
-    [checkAuthByResponse]
+    [checkAuthByResponse, repository]
   );
 
   const repo = useMemo(
@@ -588,13 +590,19 @@ const useDescriptionRepository = () => {
 const useFileRepository = () => {
   const checkAuthByResponse = useCheckAuthByResponse();
 
+  const repository = useMemo(
+    () => new Repository("/files", checkAuthByResponse),
+    [checkAuthByResponse]
+  );
+
   const postRemove = useCallback(
     async (storeFileName: string) => {
       try {
-        const response = await axios.delete<
-          void,
-          AxiosResponse<ResponseTemplate<"ok">>
-        >(`/files/${storeFileName}`);
+        const response = await repository
+          .getHttpClient()
+          .delete<void, AxiosResponse<ResponseTemplate<"ok">>>(
+            `/${storeFileName}`
+          );
         const data = response.data;
         checkAuthByResponse(data);
         return data;
@@ -602,7 +610,7 @@ const useFileRepository = () => {
         return serverErrorTemplateGenerator<"ok">();
       }
     },
-    [checkAuthByResponse]
+    [checkAuthByResponse, repository]
   );
 
   const repo = useMemo(() => ({ postRemove }), [postRemove]);
@@ -700,10 +708,9 @@ const useJourneyRepository = () => {
   const deleteJourney = useCallback(
     async (id: number) => {
       try {
-        const response = await axios.delete<
-          void,
-          AxiosResponse<ResponseTemplate<"ok">>
-        >(`/journeys/${id}`);
+        const response = await repository
+          .getHttpClient()
+          .delete<void, AxiosResponse<ResponseTemplate<"ok">>>(`/${id}`);
         const data = response.data;
         checkAuthByResponse(data);
         return data;
@@ -711,7 +718,7 @@ const useJourneyRepository = () => {
         return serverErrorTemplateGenerator<"ok">();
       }
     },
-    [checkAuthByResponse]
+    [checkAuthByResponse, repository]
   );
 
   //코멘트 추가후에 ui 상에서 추가해줘야함
@@ -747,10 +754,11 @@ const useJourneyRepository = () => {
   const deleteComment = useCallback(
     async (id: number) => {
       try {
-        const response = await axios.delete<
-          void,
-          AxiosResponse<ResponseTemplate<"ok">>
-        >(`/journeys/comments/${id}`);
+        const response = await repository
+          .getHttpClient()
+          .delete<void, AxiosResponse<ResponseTemplate<"ok">>>(
+            `/comments/${id}`
+          );
         const data = response.data;
         checkAuthByResponse(data);
         return data;
@@ -758,7 +766,7 @@ const useJourneyRepository = () => {
         return serverErrorTemplateGenerator<"ok">();
       }
     },
-    [checkAuthByResponse]
+    [checkAuthByResponse, repository]
   );
 
   const repo = useMemo(
@@ -914,10 +922,9 @@ const usePaymentRepository = () => {
   const deleteCreditCard = useCallback(
     async (id: number) => {
       try {
-        const response = await axios.delete<
-          void,
-          AxiosResponse<ResponseTemplate<"ok">>
-        >(`/payment/${id}`);
+        const response = await repository
+          .getHttpClient()
+          .delete<void, AxiosResponse<ResponseTemplate<"ok">>>(`/${id}`);
         const data = response.data;
         checkAuthByResponse(data);
         return data;
@@ -925,7 +932,7 @@ const usePaymentRepository = () => {
         return serverErrorTemplateGenerator<"ok">();
       }
     },
-    [checkAuthByResponse]
+    [checkAuthByResponse, repository]
   );
 
   const repo = useMemo(
