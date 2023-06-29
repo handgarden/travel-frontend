@@ -74,7 +74,11 @@ const serverErrorTemplateGenerator = <K,>(): ResponseTemplate<K> => {
 
 class Repository {
   private defaultPath: string;
-  private httpClient = axios;
+  private httpClient = axios.create({
+    baseURL: process.env.REACT_APP_API_HOST,
+    timeout: 3000,
+    withCredentials: true,
+  });
   private checkAuthFunc: (response: ResponseTemplate<Object>) => void;
 
   constructor(

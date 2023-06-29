@@ -24,7 +24,7 @@ type DetailProps = {
 const Detail: React.FC<DetailProps> = ({ dataId }) => {
   const [destination, setDestination] = useState<DestinationType>();
 
-  const { DestinationRepository, AccommodationRepository } = useRepository();
+  const { DestinationRepository } = useRepository();
 
   const [loading, setLoading] = useState<boolean>(false);
 

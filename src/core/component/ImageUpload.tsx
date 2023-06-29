@@ -27,9 +27,6 @@ const ImageUpload: React.FC<Props> = ({
   setFileList,
   fakeDelete = false,
 }) => {
-  const redirectPath = useRedirectPath();
-  const navigate = useNavigate();
-
   const [loading, setLoading] = useState<boolean>(false);
 
   const onChange: UploadProps["onChange"] = (data: MyUploadChangeParam) => {
