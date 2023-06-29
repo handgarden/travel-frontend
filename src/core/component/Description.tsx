@@ -8,7 +8,6 @@ import {
   Pagination,
   Space,
   Typography,
-  UploadFile,
 } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useCallback, useEffect, useMemo, useState } from "react";
