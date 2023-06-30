@@ -352,7 +352,6 @@ const ElementImages: React.FC<ElementImagesProps> = ({
             key={d}
             src={`${process.env.REACT_APP_IMAGE_BASE_URL}/${d}`}
             width={100}
-            crossOrigin="use-credentials"
           />
         ))}
       </Space>
