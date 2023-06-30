@@ -195,11 +195,14 @@ const CreditCard: React.FC<CreditCardProps> = ({
 }) => {
   const { PaymentRepository } = useRepository();
 
+  const [loading, setLoading] = useState<boolean>(false);
   const submitDelete = async () => {
     if (!window.confirm("카드를 정말로 제거하시겠습니까?")) {
       return;
     }
+    setLoading(true);
     const response = await PaymentRepository.deleteCreditCard(data.id);
+    setLoading(false);
     if (response.success) {
       window.alert("카드를 성공적으로 제거했습니다.");
       deleteCard(data.id);
@@ -216,7 +219,7 @@ const CreditCard: React.FC<CreditCardProps> = ({
   };
 
   const deleteBtn = (
-    <Button type="primary" ghost onClick={submitDelete}>
+    <Button type="primary" ghost onClick={submitDelete} loading={loading}>
       제거
     </Button>
   );

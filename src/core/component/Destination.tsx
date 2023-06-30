@@ -54,14 +54,17 @@ const AddForm: React.FC = () => {
 
   const [globalError, setGlobalError] = useState<string>("");
 
+  const [loading, setLoading] = useState<boolean>(false);
   form.submit = async () => {
     try {
       const data = await form.validateFields();
+      setLoading(true);
       const response = await DestinationRepository.postDestination(
         data,
         undefined,
         undefined
       );
+      setLoading(false);
       if (!response.success) {
         const error = response.error;
         if (!error) {
@@ -159,7 +162,7 @@ const AddForm: React.FC = () => {
             <Typography.Text type="danger">{globalError}</Typography.Text>
           </Form.Item>
         ) : null}
-        <Button type="primary" htmlType="submit">
+        <Button type="primary" htmlType="submit" loading={loading}>
           추가
         </Button>
       </Form>
@@ -188,6 +191,7 @@ const UpdateForm: React.FC<UpdateProps> = ({ data, cancle }) => {
 
   const [globalError, setGlobalError] = useState<string>("");
 
+  const [loading, setLoading] = useState<boolean>(false);
   form.submit = async () => {
     try {
       const formData = await form.validateFields();
@@ -197,11 +201,13 @@ const UpdateForm: React.FC<UpdateProps> = ({ data, cancle }) => {
       const requestData: UpdateDestinationForm = {
         ...formData,
       };
+      setLoading(true);
       const response = await repository.updateDestination(
         requestData,
         data.id.toString(),
         undefined
       );
+      setLoading(false);
       if (!response.success) {
         const error = response.error;
         if (!error) {
@@ -285,7 +291,7 @@ const UpdateForm: React.FC<UpdateProps> = ({ data, cancle }) => {
           </Form.Item>
         ) : null}
         <Space>
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" htmlType="submit" loading={loading}>
             수정
           </Button>
           <Button type="primary" onClick={cancle}>
@@ -566,6 +572,7 @@ const DestinationList: React.FC<ListProps> = ({ category, userId }) => {
             onClick={() => {
               submit();
             }}
+            loading={loading}
           >
             검색
           </Button>

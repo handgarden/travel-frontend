@@ -25,6 +25,8 @@ export const LoginForm: React.FC<Props> = ({ itemSize }) => {
 
   const { AuthRepository } = useRepository();
 
+  const [loading, setLoading] = useState<boolean>(false);
+
   form.submit = useCallback(async () => {
     const loginData = {
       account: account.current?.input ? account.current.input.value : "",
@@ -33,11 +35,13 @@ export const LoginForm: React.FC<Props> = ({ itemSize }) => {
         : "",
     };
 
+    setLoading(true);
     const userData = await AuthRepository.postLogin(
       loginData,
       undefined,
       undefined
     );
+    setLoading(false);
 
     if (userData.success) {
       const data = userData.response as MemberProfile;
@@ -67,7 +71,12 @@ export const LoginForm: React.FC<Props> = ({ itemSize }) => {
         <Input.Password ref={rawPassword} className={itemSize} />
       </Form.Item>
       <Form.Item>
-        <Button type="primary" htmlType="submit" className={itemSize}>
+        <Button
+          type="primary"
+          htmlType="submit"
+          className={itemSize}
+          loading={loading}
+        >
           로그인
         </Button>
       </Form.Item>
