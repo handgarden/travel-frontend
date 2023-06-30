@@ -34,6 +34,7 @@ jobs:
       - name: .env setting
         run: |
           echo "REACT_APP_API_HOST=${{ secrets.REACT_APP_API_HOST }}" >> .env.production
+          echo "REACT_APP_IMAGE_BASE_URL=${{ secrets.REACT_APP_IMAGE_BASE_URL }}" >> .env.production
 
       - name: Install Dependencies # 의존 파일 설치
         run: npm install

@@ -350,7 +350,7 @@ const ElementImages: React.FC<ElementImagesProps> = ({
         {images.data.map((d) => (
           <Image
             key={d}
-            src={`${process.env.REACT_APP_API_HOST}/files/${d}`}
+            src={`${process.env.REACT_APP_IMAGE_BASE_URL}/${d}`}
             width={100}
             crossOrigin="use-credentials"
           />
