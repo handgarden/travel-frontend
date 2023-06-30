@@ -15,7 +15,7 @@ const MyCarousel: React.FC<Props> = ({ data }) => {
             width={300}
             height={300}
             key={s}
-            src={`${process.env.REACT_APP_API_HOST}/files/${s}`}
+            src={`${process.env.REACT_APP_IMAGE_BASE_URL}/${s}`}
             style={{ margin: "0 auto" }}
             crossOrigin="use-credentials"
           />
