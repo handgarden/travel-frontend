@@ -22,7 +22,7 @@ import {
   getCategoryColor,
 } from "../../lib/const/category";
 import useRepository from "../hook/useRepository";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import LoadingPage from "../page/LoadingPage";
 import useRedirectPath from "../hook/useRedirectPath";
@@ -103,6 +103,20 @@ const AddForm: React.FC = () => {
       value: k,
     };
   });
+
+  const category = useLocation().pathname.split("/")[2];
+
+  useEffect(() => {
+    if (category) {
+      const categoryObj = CATEGORY[category.toUpperCase() as CategoryType];
+      if (categoryObj) {
+        form.setFieldValue("category", {
+          label: categoryObj.kr,
+          value: categoryObj.type,
+        });
+      }
+    }
+  }, [category, form]);
 
   const handleCategory = (category: string) => {
     form.setFieldValue("category", category);
@@ -518,7 +532,11 @@ const DestinationList: React.FC<ListProps> = ({ category, userId }) => {
             {"검색"}
           </Typography.Title>
           {userId ? null : (
-            <Link to={destinationPath.ADD}>
+            <Link
+              to={`${destinationPath.HOME}${
+                category ? "/" + category.toLowerCase() : ""
+              }/add`}
+            >
               <Button type="primary">여행지 추가</Button>
             </Link>
           )}
@@ -636,6 +654,8 @@ const DestinationDetail: React.FC<DetailProps> = ({ dataId }) => {
 
   const redirectPath = useRedirectPath();
   const navigate = useNavigate();
+  const location = useLocation();
+  const split = location.pathname.split("/")[2];
 
   const postDelete = useCallback(async () => {
     if (descriptions.length > 0) {
@@ -661,13 +681,14 @@ const DestinationDetail: React.FC<DetailProps> = ({ dataId }) => {
         return;
       }
       window.alert("여행지를 성공적으로 제거했습니다.");
-      navigate("/");
+      navigate(`/destination/${split || ""}`);
     }
   }, [
     descriptions.length,
     DestinationRepository,
     dataId,
     navigate,
+    split,
     redirectPath,
   ]);
 

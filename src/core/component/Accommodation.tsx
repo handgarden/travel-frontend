@@ -11,7 +11,7 @@ import { DescriptionType } from "../../types/Description.type";
 import useRedirectPath from "../hook/useRedirectPath";
 import { useNavigate } from "react-router-dom";
 import useAuthorization from "../hook/useAuthorization";
-import { DeleteOutlined, EditOutlined } from "@mui/icons-material";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import Description from "./Description";
 import LoadingPage from "../page/LoadingPage";
 import Destination from "./Destination";

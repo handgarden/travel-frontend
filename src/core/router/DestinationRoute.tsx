@@ -24,6 +24,15 @@ const DestinationRoute = () => {
         ))}
       {Object.entries(CATEGORY)
         .splice(0)
+        .map((c) => (
+          <Route
+            key={c[1].type.toLocaleLowerCase()}
+            path={destinationPath[c[1].type] + "/add"}
+            element={<DestinationPage.Add />}
+          />
+        ))}
+      {Object.entries(CATEGORY)
+        .splice(0)
         .map((c) => {
           if (c[1].type === "ACCOMMODATION") {
             return (

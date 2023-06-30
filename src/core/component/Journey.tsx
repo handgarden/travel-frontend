@@ -249,7 +249,7 @@ const Add: React.FC = () => {
         return;
       }
       window.alert("여정을 추가했습니다.");
-      navigate("../");
+      navigate("/journey");
     } catch (e) {}
   };
 
@@ -457,7 +457,7 @@ const Edit: React.FC = () => {
         return;
       }
       window.alert("여정을 수정했습니다.");
-      navigate("../");
+      navigate("/journey");
     } catch (e) {}
   };
 
