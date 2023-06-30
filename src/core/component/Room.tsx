@@ -264,6 +264,7 @@ const Add: React.FC<AddProps> = ({ dataId, isOwner }) => {
 
   const redirectPath = useRedirectPath();
 
+  const [loading, setLoading] = useState<boolean>(false);
   const submit = async () => {
     try {
       const data = await form.validateFields();
@@ -272,11 +273,13 @@ const Add: React.FC<AddProps> = ({ dataId, isOwner }) => {
         ...data,
         inTime: data.inTime.format("HH:mm"),
       };
+      setLoading(true);
       const response = await AccommodationRepository.createRoom(
         requestData,
         dataId,
         undefined
       );
+      setLoading(false);
       if (!response.success) {
         if (response.error) {
           if (response.error.status === 401) {
@@ -359,7 +362,9 @@ const Add: React.FC<AddProps> = ({ dataId, isOwner }) => {
           {GlobalErrorItem}
         </Form>
         <Space>
-          <Button onClick={submit}>추가</Button>
+          <Button onClick={submit} loading={loading}>
+            추가
+          </Button>
           <Button
             onClick={() => {
               setOpen([]);

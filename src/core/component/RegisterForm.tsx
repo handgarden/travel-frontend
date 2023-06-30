@@ -63,6 +63,8 @@ const RegisterForm: React.FC<Props> = ({ itemSize }) => {
   const query = useQueryString();
   const { AuthRepository } = useRepository();
 
+  const [loading, setLoading] = useState<boolean>(false);
+
   form.submit = async () => {
     try {
       const formData: FormData = await form.validateFields();
@@ -75,12 +77,13 @@ const RegisterForm: React.FC<Props> = ({ itemSize }) => {
         rawPassword: formData.rawPassword,
         nickname: formData.nickname,
       };
+      setLoading(true);
       const response = await AuthRepository.postRegister(
         registerData,
         undefined,
         undefined
       );
-
+      setLoading(false);
       if (response.success) {
         window.alert("회원 가입 성공.");
         let path = query.redirect ? query.redirect.toString() : "/login";
@@ -133,7 +136,12 @@ const RegisterForm: React.FC<Props> = ({ itemSize }) => {
         <Input className={itemSize} />
       </Form.Item>
       <Form.Item>
-        <Button type="primary" htmlType="submit" className={itemSize}>
+        <Button
+          type="primary"
+          htmlType="submit"
+          className={itemSize}
+          loading={loading}
+        >
           회원가입
         </Button>
       </Form.Item>

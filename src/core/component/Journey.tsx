@@ -225,6 +225,7 @@ const Add: React.FC = () => {
 
   const navigate = useNavigate();
 
+  const [loading, setLoading] = useState<boolean>(false);
   const submit = async () => {
     try {
       if (!window.confirm("정말로 추가하시겠습니까 ?")) {
@@ -239,11 +240,13 @@ const Add: React.FC = () => {
         ...formData,
         contents: content.map((c) => c.description.id),
       };
+      setLoading(true);
       const response = await JourneyRepository.postJourney(
         requestData,
         undefined,
         undefined
       );
+      setLoading(false);
       if (!response.success) {
         window.alert("여정을 추가하는데 실패했습니다");
         return;
@@ -343,7 +346,9 @@ const Add: React.FC = () => {
           </Form.Item>
         </Form>
         <Space>
-          <Button onClick={submit}>추가</Button>
+          <Button onClick={submit} loading={loading}>
+            추가
+          </Button>
           <Link to="../">
             <Button>취소</Button>
           </Link>
@@ -428,6 +433,7 @@ const Edit: React.FC = () => {
 
   const [contentError, setContentError] = useState<string>("");
 
+  const [loading, setLoading] = useState<boolean>(false);
   const submit = async () => {
     const id = pathVariable.id;
     if (!id) {
@@ -447,11 +453,13 @@ const Edit: React.FC = () => {
         ...formData,
         contents: content.map((c) => c.description.id),
       };
+      setLoading(true);
       const response = await JourneyRepository.updateJourney(
         requestData,
         pathVariable.id,
         undefined
       );
+      setLoading(false);
       if (!response.success) {
         window.alert("여정을 수정하는데 실패했습니다");
         return;
@@ -566,7 +574,9 @@ const Edit: React.FC = () => {
           </Form.Item>
         </Form>
         <Space>
-          <Button onClick={submit}>수정</Button>
+          <Button onClick={submit} loading={loading}>
+            수정
+          </Button>
           <Link to="../">
             <Button>취소</Button>
           </Link>
@@ -797,6 +807,7 @@ const AddComment: React.FC<AddCommentProps> = ({ journeyId, addComment }) => {
   const navigate = useNavigate();
   const redirectPath = useRedirectPath();
 
+  const [loading, setLoading] = useState<boolean>(false);
   form.submit = async () => {
     if (!window.confirm("정말로 추가하시겠습니까?")) {
       return;
@@ -807,11 +818,13 @@ const AddComment: React.FC<AddCommentProps> = ({ journeyId, addComment }) => {
         journeyId,
         comment: formData.comment,
       };
+      setLoading(true);
       const response = await JourneyRepository.postComment(
         requestData,
         journeyId.toString(),
         undefined
       );
+      setLoading(false);
 
       if (!response.success) {
         const error = response.error as ErrorResponse;
@@ -851,7 +864,9 @@ const AddComment: React.FC<AddCommentProps> = ({ journeyId, addComment }) => {
         >
           <TextArea style={{ resize: "none", height: "8rem" }} showCount />
         </Form.Item>
-        <Button htmlType="submit">추가</Button>
+        <Button htmlType="submit" loading={loading}>
+          추가
+        </Button>
       </Form>
     </Card>
   );
@@ -1052,17 +1067,20 @@ const EditComment: React.FC<EditCommentProps> = ({
   const navigate = useNavigate();
   const redirectPath = useRedirectPath();
 
+  const [loading, setLoading] = useState<boolean>(false);
   form.submit = async () => {
     if (!window.confirm("댓글을 수정하시겠습니까?")) {
       return;
     }
     try {
       const formData = await form.validateFields();
+      setLoading(true);
       const response = await JourneyRepository.updateComment(
         formData,
         data.id.toString(),
         undefined
       );
+      setLoading(false);
       if (!response.success) {
         const error = response.error as ErrorResponse;
         if (error.status === 401) {
@@ -1101,7 +1119,9 @@ const EditComment: React.FC<EditCommentProps> = ({
           <TextArea style={{ resize: "none", height: "8rem" }} showCount />
         </Form.Item>
         <Space>
-          <Button htmlType="submit">수정</Button>
+          <Button htmlType="submit" loading={loading}>
+            수정
+          </Button>
           <Button onClick={cancle}>취소</Button>
         </Space>
       </Form>

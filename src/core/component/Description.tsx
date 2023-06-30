@@ -70,6 +70,8 @@ const Add: React.FC<AddDescriptionProps> = ({
 
   const { DestinationRepository } = useRepository();
 
+  const [loading, setLoading] = useState<boolean>(false);
+
   const submit = async () => {
     try {
       const data = await form.validateFields();
@@ -101,11 +103,13 @@ const Add: React.FC<AddDescriptionProps> = ({
         destinationId,
         storeFileNames,
       };
+      setLoading(true);
       const response = await DestinationRepository.postDescription(
         requestData,
         destinationId.toString(),
         undefined
       );
+      setLoading(false);
       if (!response.success) {
         if (response.error && response.error.status === 401) {
           window.alert("로그인이 필요합니다.");
@@ -161,7 +165,9 @@ const Add: React.FC<AddDescriptionProps> = ({
         </Form>
         {GlobalErrorItem}
         <Space>
-          <Button onClick={submit}>추가</Button>
+          <Button onClick={submit} loading={loading}>
+            추가
+          </Button>
           <Button
             onClick={() => {
               setOpen([]);
@@ -212,6 +218,7 @@ const Edit: React.FC<EditProps> = ({ data, cancle, updateDescription }) => {
   const redirectPath = useRedirectPath();
   const navigate = useNavigate();
 
+  const [loading, setLoading] = useState<boolean>(false);
   const submit = async () => {
     if (!window.confirm("정말 수정하시겠습니까?")) {
       return;
@@ -244,11 +251,13 @@ const Edit: React.FC<EditProps> = ({ data, cancle, updateDescription }) => {
       ...formData,
       storeFileNames,
     };
+    setLoading(true);
     const response = await DescriptionRepository.updateDescription(
       requestData,
       data.id.toString(),
       undefined
     );
+    setLoading(false);
     if (!response.success) {
       if (response.error && response.error.status === 401) {
         window.alert("로그인이 필요합니다.");
@@ -281,7 +290,9 @@ const Edit: React.FC<EditProps> = ({ data, cancle, updateDescription }) => {
         {GlobalErrorItem}
       </Form>
       <Space>
-        <Button onClick={submit}>수정</Button>
+        <Button onClick={submit} loading={loading}>
+          수정
+        </Button>
         <Button onClick={cancle}>취소</Button>
       </Space>
     </Card>
@@ -299,12 +310,14 @@ const Delete: React.FC<DeleteProps> = ({ descriptionId, deleteElem }) => {
   const redirectPath = useRedirectPath();
   const navigate = useNavigate();
 
+  const [loading, setLoading] = useState<boolean>(false);
   const postDelete = async () => {
     if (window.confirm("정말로 제거하시겠습니까?")) {
+      setLoading(true);
       const response = await DescriptionRepository.deleteDescription(
         descriptionId
       );
-
+      setLoading(false);
       if (!response.success) {
         if (response.error && response.error.status === 401) {
           window.alert("로그인이 필요합니다.");
@@ -322,7 +335,7 @@ const Delete: React.FC<DeleteProps> = ({ descriptionId, deleteElem }) => {
 
   return (
     <>
-      <Button onClick={postDelete}>
+      <Button onClick={postDelete} loading={loading}>
         <DeleteOutlined />
       </Button>
     </>
