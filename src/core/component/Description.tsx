@@ -192,7 +192,7 @@ const Edit: React.FC<EditProps> = ({ data, cancle, updateDescription }) => {
         uid: storeFileName,
         name: storeFileName,
         status: "done",
-        url: `/files/${storeFileName}`,
+        url: `${process.env.REACT_APP_API_HOST}/files/${storeFileName}`,
         response: {
           success: true,
           response: [storeFileName],

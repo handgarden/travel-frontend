@@ -76,7 +76,7 @@ class Repository {
   private defaultPath: string;
   private httpClient = axios.create({
     baseURL: process.env.REACT_APP_API_HOST,
-    timeout: 3000,
+    timeout: 5000,
     withCredentials: true,
   });
   private checkAuthFunc: (response: ResponseTemplate<Object>) => void;

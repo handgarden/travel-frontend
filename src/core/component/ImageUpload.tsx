@@ -4,7 +4,12 @@ import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 import React, { useMemo, useState } from "react";
 import useRepository from "../hook/useRepository";
 import { MyUploadFile } from "../../types/File.type";
-import { ResponseTemplate } from "../../types/repository/basic.type";
+import {
+  ErrorResponse,
+  ResponseTemplate,
+} from "../../types/repository/basic.type";
+import { useNavigate } from "react-router-dom";
+import useRedirectPath from "../hook/useRedirectPath";
 
 export interface MyUploadChangeParam {
   file: MyUploadFile;
@@ -27,6 +32,9 @@ const ImageUpload: React.FC<Props> = ({
 }) => {
   const [loading, setLoading] = useState<boolean>(false);
 
+  const navigate = useNavigate();
+  const redirectPath = useRedirectPath();
+
   const onChange: UploadProps["onChange"] = (data: MyUploadChangeParam) => {
     const file = data.file;
     if (file.status === "uploading") {
@@ -36,6 +44,12 @@ const ImageUpload: React.FC<Props> = ({
     }
     let fileList = data.fileList;
     if (file.response && !file.response.success) {
+      const err = file.response.error as ErrorResponse;
+      if (err.status === 401) {
+        window.alert("로그인이 필요합니다.");
+        navigate(`/login${redirectPath}`);
+        return;
+      }
       fileList = fileList.map((f) => {
         if (f.uid !== file.uid) {
           return f;
@@ -86,7 +100,7 @@ const ImageUpload: React.FC<Props> = ({
     <ImgCrop rotationSlider>
       <Upload
         action={`${process.env.REACT_APP_API_HOST}/files`}
-        headers={{ credentials: "include" }}
+        withCredentials
         accept=".jpg, .jpeg, .png"
         listType="picture-card"
         fileList={fileList}
