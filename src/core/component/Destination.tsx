@@ -429,6 +429,11 @@ type ListProps = {
   userId?: number;
 };
 
+type QueryForm = {
+  categories: CategoryType[];
+  query: string;
+};
+
 const DestinationList: React.FC<ListProps> = ({ category, userId }) => {
   const [data, setData] = useState<DestinationType[]>([]);
 
@@ -486,19 +491,22 @@ const DestinationList: React.FC<ListProps> = ({ category, userId }) => {
     setData((prev) => prev.filter((d) => d.id !== id));
   }, []);
 
-  const [categories, setCategories] = useState<CategoryType[]>([]);
+  const [form] = useForm<QueryForm>();
 
   useEffect(() => {
     if (category) {
-      setCategories([category]);
+      form.setFieldValue("categories", [category]);
     }
-  }, [category]);
+    form.setFieldValue("query", "");
+    setPagination({
+      page: 1,
+      size: 10,
+    });
+  }, [category, form]);
 
   const optionChange = (checkedValues: CheckboxValueType[]) => {
-    setCategories(checkedValues as CategoryType[]);
+    form.setFieldValue("categories", checkedValues);
   };
-
-  const [query, setQuery] = useState<string>("");
 
   const submit = () => {
     setPagination({
@@ -508,8 +516,8 @@ const DestinationList: React.FC<ListProps> = ({ category, userId }) => {
     getData({
       page: 1,
       size: 10,
-      categories,
-      query,
+      categories: form.getFieldValue("categories"),
+      query: form.getFieldValue("query"),
     });
   };
 
@@ -521,8 +529,8 @@ const DestinationList: React.FC<ListProps> = ({ category, userId }) => {
     getData({
       page,
       size,
-      categories,
-      query,
+      categories: form.getFieldValue("categories"),
+      query: form.getFieldValue("query"),
     });
   };
 
@@ -546,7 +554,7 @@ const DestinationList: React.FC<ListProps> = ({ category, userId }) => {
             </Link>
           )}
         </Space>
-        <Form>
+        <Form form={form}>
           {category ? null : (
             <Form.Item label="카테고리">
               <Checkbox.Group
@@ -557,13 +565,8 @@ const DestinationList: React.FC<ListProps> = ({ category, userId }) => {
               />
             </Form.Item>
           )}
-          <Form.Item label="검색어" name="query" initialValue="">
-            <Input
-              type="text"
-              onChange={(e) => {
-                setQuery(e.target.value);
-              }}
-            />
+          <Form.Item label="검색어" name="query">
+            <Input type="text" />
           </Form.Item>
           <Button
             type="primary"
