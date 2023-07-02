@@ -56,8 +56,27 @@ const ContentHeader: React.FC<HeaderProps> = ({ data }) => {
   return (
     <>
       <Tag color={color}>{data.destination.category.kr}</Tag>
-      <Divider type="vertical" />
-      <Typography.Text>{`${data.destination.title} (${data.destination.address})`}</Typography.Text>
+      <Typography.Text>{`${data.destination.title}`}</Typography.Text>
+    </>
+  );
+};
+
+type BodyProps = {
+  data: JourneyContentType;
+};
+
+const ContentBody: React.FC<BodyProps> = ({ data }) => {
+  return (
+    <>
+      <Typography.Paragraph style={{ textAlign: "center" }}>
+        {`주소: ${data.destination.address}`}
+      </Typography.Paragraph>
+      <Description.Elem
+        data={data.description}
+        deleteElem={() => {}}
+        updateElem={() => {}}
+        hideExtra={true}
+      />
     </>
   );
 };
@@ -165,12 +184,7 @@ const AddContentModal: React.FC<AddModalProps> = ({
                   )
                 }
               >
-                <Description.Elem
-                  data={d.description}
-                  deleteElem={() => {}}
-                  updateElem={() => {}}
-                  hideExtra={true}
-                />
+                <ContentBody data={d} key={d.description.id} />
               </Collapse.Panel>
             ))}
           </Collapse>
@@ -325,12 +339,7 @@ const Add: React.FC = () => {
                       </Button>
                     }
                   >
-                    <Description.Elem
-                      data={d.description}
-                      deleteElem={() => {}}
-                      updateElem={() => {}}
-                      hideExtra={true}
-                    />
+                    <ContentBody data={d} />
                   </Collapse.Panel>
                 ))}
               </Collapse>
@@ -352,9 +361,14 @@ const Add: React.FC = () => {
           <Button onClick={submit} loading={loading}>
             추가
           </Button>
-          <Link to="../">
-            <Button>취소</Button>
-          </Link>
+          <Button
+            onClick={() => {
+              navigate(-1);
+            }}
+            disabled={loading}
+          >
+            취소
+          </Button>
         </Space>
       </Card>
     </>
@@ -523,7 +537,7 @@ const Edit: React.FC = () => {
               >
                 {content.map((d) => (
                   <Collapse.Panel
-                    header={`${d.destination.title} - ${d.destination.address}`}
+                    header={<ContentHeader data={d} />}
                     key={d.description.id.toString()}
                     style={panelStyle}
                     extra={
@@ -538,28 +552,7 @@ const Edit: React.FC = () => {
                       </Button>
                     }
                   >
-                    <Typography.Paragraph style={{ textAlign: "center" }}>
-                      {new Date(d.description.updatedAt)
-                        .toLocaleString("ko-KR")
-                        .toString()}
-                    </Typography.Paragraph>
-                    <div>
-                      <MyCarousel
-                        data={{ images: d.description.images.map((d) => d) }}
-                      />
-                    </div>
-                    <Typography.Paragraph
-                      style={{
-                        maxWidth: 300,
-                        margin: "0 auto",
-                        wordWrap: "break-word",
-                      }}
-                    >
-                      <TextContent
-                        border={false}
-                        data={d.description.content}
-                      />
-                    </Typography.Paragraph>
+                    <ContentBody data={d} />
                   </Collapse.Panel>
                 ))}
               </Collapse>
@@ -580,9 +573,9 @@ const Edit: React.FC = () => {
           <Button onClick={submit} loading={loading}>
             수정
           </Button>
-          <Link to="../">
-            <Button>취소</Button>
-          </Link>
+          <Button onClick={() => navigate(-1)} disabled={loading}>
+            취소
+          </Button>
         </Space>
       </Card>
     </>
@@ -682,14 +675,7 @@ const Elem: React.FC<ElemProps> = ({ data }) => {
         >
           {data.journeyContents.map((d) => (
             <Collapse.Panel
-              header={
-                <>
-                  <Tag color={getCategoryColor(d.destination.category)}>
-                    {d.destination.category.kr}
-                  </Tag>
-                  <Typography.Text>{d.destination.title}</Typography.Text>
-                </>
-              }
+              header={<ContentHeader data={d} />}
               key={d.description.id.toString()}
               style={panelStyle}
               extra={
@@ -699,29 +685,7 @@ const Elem: React.FC<ElemProps> = ({ data }) => {
                 />
               }
             >
-              <div>
-                <Typography.Paragraph style={{ textAlign: "center" }}>
-                  {`주소: ${d.destination.address}`}
-                </Typography.Paragraph>
-                <Typography.Paragraph style={{ textAlign: "center" }}>
-                  {new Date(d.description.updatedAt)
-                    .toLocaleString("ko-KR")
-                    .toString()}
-                </Typography.Paragraph>
-                <div>
-                  <MyCarousel
-                    data={{ images: d.description.images.map((d) => d) }}
-                  />
-                </div>
-                <Typography.Paragraph
-                  style={{
-                    maxWidth: 300,
-                    margin: "0 auto",
-                  }}
-                >
-                  <TextContent data={d.description.content} border={false} />
-                </Typography.Paragraph>
-              </div>
+              <ContentBody data={d} />
             </Collapse.Panel>
           ))}
         </Collapse>
