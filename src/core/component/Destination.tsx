@@ -55,6 +55,9 @@ const AddForm: React.FC = () => {
   const [globalError, setGlobalError] = useState<string>("");
 
   const [loading, setLoading] = useState<boolean>(false);
+
+  const category = useLocation().pathname.split("/")[2];
+
   form.submit = async () => {
     try {
       const data = await form.validateFields();
@@ -89,7 +92,7 @@ const AddForm: React.FC = () => {
       }
 
       window.alert("여행지를 추가했습니다.");
-      navigate("/");
+      navigate(destinationPath[category.toUpperCase() as CategoryType]);
     } catch (e) {}
   };
 
@@ -107,21 +110,16 @@ const AddForm: React.FC = () => {
     };
   });
 
-  const category = useLocation().pathname.split("/")[2];
-
   useEffect(() => {
     if (category) {
       const categoryObj = CATEGORY[category.toUpperCase() as CategoryType];
       if (categoryObj) {
-        form.setFieldValue("category", {
-          label: categoryObj.kr,
-          value: categoryObj.type,
-        });
+        form.setFieldValue("category", categoryObj.type);
       }
     }
   }, [category, form]);
 
-  const handleCategory = (category: string) => {
+  const handleCategory = (category: CategoryType) => {
     form.setFieldValue("category", category);
   };
 
@@ -471,22 +469,6 @@ const DestinationList: React.FC<ListProps> = ({ category, userId }) => {
 
   const [total, setTotal] = useState<number>(0);
 
-  useEffect(() => {
-    if (category) {
-      getData({
-        page: 1,
-        size: 10,
-        categories: [category],
-      });
-      return;
-    }
-
-    getData({
-      page: 1,
-      size: 10,
-    });
-  }, [category, getData]);
-
   const deleteData = useCallback((id: number) => {
     setData((prev) => prev.filter((d) => d.id !== id));
   }, []);
@@ -494,41 +476,44 @@ const DestinationList: React.FC<ListProps> = ({ category, userId }) => {
   const [form] = useForm<QueryForm>();
 
   useEffect(() => {
-    if (category) {
-      form.setFieldValue("categories", [category]);
-    }
+    form.setFieldValue("categories", category ? [category] : []);
     form.setFieldValue("query", "");
-    setPagination({
+    const initPage: PaginationQuery = {
       page: 1,
       size: 10,
+    };
+    setPagination(initPage);
+    getData({
+      ...initPage,
+      categories: category ? [category] : [],
     });
-  }, [category, form]);
+  }, [category, form, getData]);
 
   const optionChange = (checkedValues: CheckboxValueType[]) => {
     form.setFieldValue("categories", checkedValues);
   };
 
   const submit = () => {
-    setPagination({
+    const initPage: PaginationQuery = {
       page: 1,
       size: 10,
-    });
+    };
+    setPagination(initPage);
     getData({
-      page: 1,
-      size: 10,
+      ...initPage,
       categories: form.getFieldValue("categories"),
       query: form.getFieldValue("query"),
     });
   };
 
   const handlePageChange = (page: number, size: number) => {
-    setPagination({
+    const newPage = {
       page,
       size,
-    });
+    };
+    setPagination(newPage);
     getData({
-      page,
-      size,
+      ...newPage,
       categories: form.getFieldValue("categories"),
       query: form.getFieldValue("query"),
     });
