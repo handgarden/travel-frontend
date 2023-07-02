@@ -14,7 +14,6 @@ import {
 } from "antd";
 import useRepository from "../hook/useRepository";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { CaretRightOutlined } from "@ant-design/icons";
 import BasicProfile from "./BasicProfile";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import useModalState from "../hook/useModalState";
@@ -22,7 +21,11 @@ import { useForm } from "antd/es/form/Form";
 import { validationMessages } from "../../lib/validation/validation.message";
 import MyCarousel from "./MyCarousel";
 import { useAuth } from "../../context/AuthContext";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import {
+  CaretRightOutlined,
+  EditOutlined,
+  DeleteOutlined,
+} from "@ant-design/icons";
 import useRedirectPath from "../hook/useRedirectPath";
 import TextArea from "antd/es/input/TextArea";
 import {
@@ -679,7 +682,14 @@ const Elem: React.FC<ElemProps> = ({ data }) => {
         >
           {data.journeyContents.map((d) => (
             <Collapse.Panel
-              header={`${d.destination.title} - ${d.destination.address}`}
+              header={
+                <>
+                  <Tag color={getCategoryColor(d.destination.category)}>
+                    {d.destination.category.kr}
+                  </Tag>
+                  <Typography.Text>{d.destination.title}</Typography.Text>
+                </>
+              }
               key={d.description.id.toString()}
               style={panelStyle}
               extra={
@@ -690,6 +700,9 @@ const Elem: React.FC<ElemProps> = ({ data }) => {
               }
             >
               <div>
+                <Typography.Paragraph style={{ textAlign: "center" }}>
+                  {`주소: ${d.destination.address}`}
+                </Typography.Paragraph>
                 <Typography.Paragraph style={{ textAlign: "center" }}>
                   {new Date(d.description.updatedAt)
                     .toLocaleString("ko-KR")
