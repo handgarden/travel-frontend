@@ -1,4 +1,12 @@
-import { Button, Layout, Menu, MenuProps, Space, theme } from "antd";
+import {
+  Button,
+  Layout,
+  Menu,
+  MenuProps,
+  Space,
+  Typography,
+  theme,
+} from "antd";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { destinationPath, journeyPath } from "../router/path";
@@ -17,6 +25,7 @@ import { CATEGORY } from "../../lib/const/category";
 import styles from "./Sidebar.module.scss";
 import Navbar from "../component/MemberNavbar";
 import DefaultIcon from "../component/DefaultIcon";
+import { Footer } from "antd/es/layout/layout";
 
 const defaultIcon = [<LocalHotel />, <Restaurant />, <Kayaking />, <Map />];
 
@@ -129,6 +138,24 @@ const DefaultLayout: React.FC = () => {
           </Layout.Content>
         </Layout>
       </Layout>
+      <Footer>
+        <Typography.Paragraph style={{ fontSize: ".75rem" }}>
+          {"여행지 데이터와 사진의 출처는 ("}
+          <Link to="https://api.visitkorea.or.kr/#/" target="_blank">
+            한국관광공사
+          </Link>
+          {")와 ("}
+          <Link to="https://www.data.go.kr/index.do" target="_blank">
+            공공데이터
+          </Link>
+          {")입니다."}
+        </Typography.Paragraph>
+        <Typography.Paragraph style={{ fontSize: ".75rem" }}>
+          {
+            "혹시나 사용에 문제가 있다면 sjungwon03@gmail.com 메일로 연락주세요."
+          }
+        </Typography.Paragraph>
+      </Footer>
     </Layout>
   );
 };
