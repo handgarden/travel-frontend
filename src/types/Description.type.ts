@@ -32,5 +32,4 @@ export type DescriptionType = {
 export type ItemListQuery = PaginationQuery & {
   categories?: CategoryType[];
   query?: string;
-  userId?: number;
 };
