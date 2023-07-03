@@ -68,7 +68,7 @@ const DestinationPage: React.FC = () => {
   // todo - nickname으로 변경
   return (
     <>
-      <Destination.DestinationList userId={1} />
+      <Destination.DestinationList forUser />
     </>
   );
 };

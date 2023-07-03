@@ -424,7 +424,7 @@ const categoryOptions = Object.values(CATEGORY).map((v) => ({
 
 type ListProps = {
   category?: CategoryType;
-  userId?: number;
+  forUser?: boolean;
 };
 
 type QueryForm = {
@@ -432,23 +432,22 @@ type QueryForm = {
   query: string;
 };
 
-const DestinationList: React.FC<ListProps> = ({ category, userId }) => {
+const DestinationList: React.FC<ListProps> = ({ category, forUser }) => {
   const [data, setData] = useState<DestinationType[]>([]);
 
-  const { DestinationRepository: repository } = useRepository();
+  const { DestinationRepository: repository, UserRepository } = useRepository();
 
   const [loading, setLoading] = useState<boolean>(false);
 
   const getData = useCallback(
     async (query: ItemListQuery) => {
       setLoading(true);
-      if (userId) {
-        query = {
-          ...query,
-          userId,
-        };
+      let response = null;
+      if (forUser) {
+        response = await UserRepository.getUserDestinations(undefined, query);
+      } else {
+        response = await repository.getDestinations(undefined, query);
       }
-      const response = await repository.getDestinations(undefined, query);
       setLoading(false);
       if (!response.success) {
         window.alert("여행지 데이터를 가져오는데 실패했습니다.");
@@ -459,7 +458,7 @@ const DestinationList: React.FC<ListProps> = ({ category, userId }) => {
       setData(paginationResponse.data);
       setTotal(paginationResponse.total);
     },
-    [repository, userId]
+    [UserRepository, forUser, repository]
   );
 
   const [pagination, setPagination] = useState<PaginationQuery>({
@@ -529,7 +528,7 @@ const DestinationList: React.FC<ListProps> = ({ category, userId }) => {
           <Typography.Title level={4} style={{ margin: ".25rem 0" }}>
             {"검색"}
           </Typography.Title>
-          {userId ? null : (
+          {forUser ? null : (
             <Link
               to={`${destinationPath.HOME}${
                 category ? "/" + category.toLowerCase() : ""
