@@ -284,6 +284,27 @@ const useUserRepository = () => {
     [repository]
   );
 
+  const getUserDestinations = useMemo(() => {
+    return repository.createGet<
+      PaginationResponse<DestinationResponse>,
+      PaginationResponse<DestinationType>,
+      undefined,
+      ItemListQuery
+    >(
+      "/destinations",
+      (response: PaginationResponse<DestinationResponse>) => {
+        return {
+          ...response,
+          data: response.data.map((d) => ({
+            ...d,
+            category: CATEGORY[d.category],
+          })),
+        };
+      },
+      true
+    );
+  }, [repository]);
+
   const getUserDescriptions = useMemo(() => {
     return repository.createGet<
       PaginationResponse<DescriptionType>,
@@ -330,10 +351,12 @@ const useUserRepository = () => {
       getUserDescriptions,
       getUserJourneys,
       getUserComments,
+      getUserDestinations,
     }),
     [
       getUserComments,
       getUserDescriptions,
+      getUserDestinations,
       getUserJourneys,
       postNickname,
       postPassword,
