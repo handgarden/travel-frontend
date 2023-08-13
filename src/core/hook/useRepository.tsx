@@ -6,7 +6,7 @@ import {
 } from "../../types/repository/basic.type";
 import { useAuth } from "../../context/AuthContext";
 import {
-  MemberProfile,
+  MemberBasicProfile,
   UpdateNicknameForm,
   UpdatePasswordForm,
 } from "../../types/User.type";
@@ -212,7 +212,7 @@ const useAuthRepository = () => {
   );
 
   const postLogin = useMemo(
-    () => repository.createPost<LoginForm, MemberProfile>("/login"),
+    () => repository.createPost<LoginForm, MemberBasicProfile>("/login"),
     [repository]
   );
 
@@ -244,6 +244,11 @@ const useUserRepository = () => {
   const repository = useMemo(
     () => new Repository("/members", checkAuthByResponse),
     [checkAuthByResponse]
+  );
+
+  const getProfile = useMemo(
+    () => repository.createGet<MemberBasicProfile>(""),
+    [repository]
   );
 
   const postNickname = useMemo(
@@ -290,6 +295,7 @@ const useUserRepository = () => {
 
   const repo = useMemo(
     () => ({
+      getProfile,
       postNickname,
       postPassword,
       getUserDescriptions,
@@ -298,6 +304,7 @@ const useUserRepository = () => {
       getUserDestinations,
     }),
     [
+      getProfile,
       getUserComments,
       getUserDescriptions,
       getUserDestinations,
@@ -344,9 +351,7 @@ const useDestinationRepository = () => {
   );
 
   const updateDestination = useMemo(() => {
-    return repository.createPost<UpdateDestinationForm, "ok", "ok", string>(
-      "/{pv}"
-    );
+    return repository.createPost<UpdateDestinationForm, "ok", string>("/{pv}");
   }, [repository]);
 
   const deleteDestination = useCallback(
@@ -566,7 +571,6 @@ const useJourneyRepository = () => {
     return repository.createPost<
       JourneyCommentForm,
       JourneyCommentType,
-      JourneyCommentType,
       string
     >("/{pv}/comments");
   }, [repository]);
@@ -679,9 +683,7 @@ const useAccommodationRepository = () => {
   }, [repository]);
 
   const cancelOrder = useMemo(() => {
-    return repository.createPost<void, "ok", "ok", number>(
-      "/orders/{pv}/cancel"
-    );
+    return repository.createPost<void, "ok", number>("/orders/{pv}/cancel");
   }, [repository]);
 
   const getOrders = useMemo(() => {

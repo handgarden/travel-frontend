@@ -58,11 +58,7 @@ const DepositModal: React.FC<DepositModalProps> = ({ deposit }) => {
         return;
       }
       setLoading(true);
-      const response = await PaymentRepository.depositTravelPay(
-        data,
-        undefined,
-        undefined
-      );
+      const response = await PaymentRepository.depositTravelPay(data);
       if (response.success) {
         deposit(data.depositAmount);
         window.alert("충전에 성공했습니다.");
@@ -292,11 +288,7 @@ const AddCreditCard: React.FC<AddCreditCardProps> = ({ addCard }) => {
         cardNumber: cardNumber,
       };
       setLoading(true);
-      const response = await PaymentRepository.createCreditCard(
-        requestData,
-        undefined,
-        undefined
-      );
+      const response = await PaymentRepository.createCreditCard(requestData);
       if (response.success) {
         const newCard: CreditCardType = {
           id: response.response as number,

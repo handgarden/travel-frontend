@@ -1,11 +1,17 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import useRepository from "../hook/useRepository";
-import { DestinationType } from "../../types/Destination.type";
+import {
+  DestinationResponse,
+  DestinationType,
+} from "../../types/Destination.type";
 import {
   ErrorResponse,
   PaginationResponse,
 } from "../../types/repository/basic.type";
-import { getCategoryColor } from "../../lib/const/category";
+import {
+  convertObjectIncludeCategory,
+  getCategoryColor,
+} from "../../lib/const/category";
 import { Button, Card, Divider, Space, Tag, Typography } from "antd";
 import { DescriptionType } from "../../types/Description.type";
 import useRedirectPath from "../hook/useRedirectPath";
@@ -30,17 +36,16 @@ const Detail: React.FC<DetailProps> = ({ dataId }) => {
 
   const getDestination = useCallback(async () => {
     setLoading(true);
-    const response = await DestinationRepository.getDestination(
-      dataId.toString(),
-      undefined
-    );
+    const response = await DestinationRepository.getDestination({
+      pathVariable: dataId.toString(),
+    });
     setLoading(false);
     if (!response.success) {
       window.alert("여행지 데이터를 가져오는데 실패했습니다.");
       return;
     }
-
-    setDestination(response.response as DestinationType);
+    const data = response.response as DestinationResponse;
+    setDestination(convertObjectIncludeCategory(data));
   }, [dataId, DestinationRepository]);
 
   useEffect(() => {

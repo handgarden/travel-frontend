@@ -19,6 +19,7 @@ import { validationMessages } from "../../lib/validation/validation.message";
 import {
   CATEGORY,
   CategoryType,
+  convertObjectIncludeCategory,
   getCategoryColor,
 } from "../../lib/const/category";
 import useRepository from "../hook/useRepository";
@@ -38,6 +39,7 @@ import {
   CreateDestinationForm,
   UpdateDestinationForm,
   DestinationType,
+  DestinationResponse,
 } from "../../types/Destination.type";
 import useAuthorization from "../hook/useAuthorization";
 import { ItemListQuery, DescriptionType } from "../../types/Description.type";
@@ -62,11 +64,7 @@ const AddForm: React.FC = () => {
     try {
       const data = await form.validateFields();
       setLoading(true);
-      const response = await DestinationRepository.postDestination(
-        data,
-        undefined,
-        undefined
-      );
+      const response = await DestinationRepository.postDestination(data);
       setLoading(false);
       if (!response.success) {
         const error = response.error;
@@ -200,11 +198,9 @@ const UpdateForm: React.FC<UpdateProps> = ({ data, cancle }) => {
         ...formData,
       };
       setLoading(true);
-      const response = await repository.updateDestination(
-        requestData,
-        data.id.toString(),
-        undefined
-      );
+      const response = await repository.updateDestination(requestData, {
+        pathVariable: data.id.toString(),
+      });
       setLoading(false);
       if (!response.success) {
         const error = response.error;
@@ -316,10 +312,10 @@ const ElementImages: React.FC<ElementImagesProps> = ({
 
   const getData = useCallback(
     async (paginationQuery: PaginationQuery) => {
-      const data = await DestinationRepository.getDestinationThumnails(
-        id.toString(),
-        paginationQuery
-      );
+      const data = await DestinationRepository.getDestinationThumnails({
+        pathVariable: id.toString(),
+        query: paginationQuery,
+      });
       if (data.success) {
         const pgData = data.response as PaginationResponse<StoreFileName>;
         setImages(pgData);
@@ -444,9 +440,9 @@ const DestinationList: React.FC<ListProps> = ({ category, forUser }) => {
       setLoading(true);
       let response = null;
       if (forUser) {
-        response = await UserRepository.getUserDestinations(undefined, query);
+        response = await UserRepository.getUserDestinations({ query });
       } else {
-        response = await repository.getDestinations(undefined, query);
+        response = await repository.getDestinations({ query });
       }
       setLoading(false);
       if (!response.success) {
@@ -454,8 +450,11 @@ const DestinationList: React.FC<ListProps> = ({ category, forUser }) => {
         return;
       }
       const paginationResponse =
-        response.response as PaginationResponse<DestinationType>;
-      setData(paginationResponse.data);
+        response.response as PaginationResponse<DestinationResponse>;
+      const data = paginationResponse.data.map((d) =>
+        convertObjectIncludeCategory(d)
+      );
+      setData(data);
       setTotal(paginationResponse.total);
     },
     [UserRepository, forUser, repository]
@@ -600,17 +599,18 @@ const DestinationDetail: React.FC<DetailProps> = ({ dataId }) => {
 
   const getDestination = useCallback(async () => {
     setLoading(true);
-    const response = await DestinationRepository.getDestination(
-      dataId.toString(),
-      undefined
-    );
+    const response = await DestinationRepository.getDestination({
+      pathVariable: dataId.toString(),
+    });
     setLoading(false);
     if (!response.success) {
       window.alert("여행지 데이터를 가져오는데 실패했습니다.");
       return;
     }
 
-    setDestination(response.response as DestinationType);
+    setDestination(
+      convertObjectIncludeCategory(response.response as DestinationResponse)
+    );
   }, [dataId, DestinationRepository]);
 
   useEffect(() => {

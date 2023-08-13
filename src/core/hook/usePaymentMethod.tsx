@@ -8,10 +8,7 @@ const usePaymentMethod = () => {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethodInFoType>();
 
   const getData = useCallback(async () => {
-    const response = await PaymentRepository.getPaymentMethod(
-      undefined,
-      undefined
-    );
+    const response = await PaymentRepository.getPaymentMethod();
     if (response.success) {
       setPaymentMethod(response.response as PaymentMethodInFoType);
       return;

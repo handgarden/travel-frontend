@@ -9,15 +9,15 @@ import {
 import { useNavigate } from "react-router-dom";
 import { ChildFC } from "../types/Basic.type";
 import useRepository from "../core/hook/useRepository";
-import { MemberProfile } from "../types/User.type";
+import { MemberBasicProfile } from "../types/User.type";
 
 type AuthStatus = "PENDING" | "DONE";
 
 type AuthContextType = {
   status: AuthStatus;
-  user: MemberProfile | null;
+  user: MemberBasicProfile | null;
   checkLogin: () => void;
-  login: (data: MemberProfile, redirectURL: string) => void;
+  login: (data: MemberBasicProfile, redirectURL: string) => void;
   logout: () => void;
   updateNickname: (newNickname: string) => void;
 };
@@ -34,18 +34,20 @@ const AuthContext = createContext<AuthContextType>({
 export const AuthProvider: ChildFC = ({ children }) => {
   const [status, setStatus] = useState<AuthStatus>("PENDING");
 
-  const [user, setUser] = useState<MemberProfile | null>(null);
+  const [user, setUser] = useState<MemberBasicProfile | null>(null);
 
   const navigate = useNavigate();
 
-  const { AuthRepository } = useRepository();
+  const jwt = localStorage.getItem("jwt");
+
+  const { UserRepository } = useRepository();
 
   const checkLogin = useCallback(async () => {
-    const response = await AuthRepository.postLoginWithSession(
-      undefined,
-      undefined,
-      undefined
-    );
+    if (!jwt) {
+      setStatus("DONE");
+      return;
+    }
+    const response = await UserRepository.getProfile();
     const memberDetailProfile = response.response;
     if (response.success === false || memberDetailProfile == null) {
       setStatus("DONE");
@@ -53,14 +55,14 @@ export const AuthProvider: ChildFC = ({ children }) => {
     }
     setUser(memberDetailProfile);
     setStatus("DONE");
-  }, [AuthRepository]);
+  }, [UserRepository, jwt]);
 
   useEffect(() => {
     checkLogin();
   }, [checkLogin]);
 
   const login = useCallback(
-    (data: MemberProfile, redirectURL: string) => {
+    (data: MemberBasicProfile, redirectURL: string) => {
       setUser(data);
       navigate(redirectURL);
     },

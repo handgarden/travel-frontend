@@ -40,7 +40,10 @@ import {
   JourneyCommentUpdateForm,
   JourneyContentType,
   JourneyForm,
+  JourneyResponse,
   JourneyType,
+  journeyResponseConverter,
+  jouryneyContentResponseConverter,
 } from "../../types/Journey.type";
 import { getCategoryColor } from "../../lib/const/category";
 import useAuthorization from "../hook/useAuthorization";
@@ -108,18 +111,20 @@ const AddContentModal: React.FC<AddModalProps> = ({
 
   const getData = useCallback(
     async (pageQuery: PaginationQuery) => {
-      const response = await JourneyRepository.getJourneyContent(
-        undefined,
-        pageQuery
-      );
+      const response = await JourneyRepository.getJourneyContent({
+        query: pageQuery,
+      });
       if (!response.success) {
         window.alert("후기를 가져오는데 실패했습니다.");
         return;
       }
       if (response.response) {
         const res = response.response;
+        const data = (res.data || []).map((d) =>
+          jouryneyContentResponseConverter(d)
+        );
         setTotal(res.total ? res.total : 0);
-        setData(res.data ? res.data : []);
+        setData(data);
       }
     },
     [JourneyRepository]
@@ -258,11 +263,7 @@ const Add: React.FC = () => {
         contents: content.map((c) => c.description.id),
       };
       setLoading(true);
-      const response = await JourneyRepository.postJourney(
-        requestData,
-        undefined,
-        undefined
-      );
+      const response = await JourneyRepository.postJourney(requestData);
       setLoading(false);
       if (!response.success) {
         window.alert("여정을 추가하는데 실패했습니다");
@@ -428,18 +429,20 @@ const Edit: React.FC = () => {
       window.alert("수정하려는 데이터를 가져오는데 실패했습니다.");
       return;
     }
-    const response = await JourneyRepository.getJourney(id, undefined);
+    const response = await JourneyRepository.getJourney({ pathVariable: id });
     if (!response.success) {
       window.alert("수정하려는 데이터를 가져오는데 실패했습니다.");
       return;
     }
-    const data = response.response as JourneyType;
+    const data = response.response as JourneyResponse;
     if (data.creator.nickname !== user.nickname) {
       window.alert("권한이 없습니다.");
       navigate("../");
       return;
     }
-    setContent(data.journeyContents);
+    setContent(
+      data.journeyContents.map((d) => jouryneyContentResponseConverter(d))
+    );
     form.setFieldValue("title", data.title);
     form.setFieldValue("review", data.content);
   }, [JourneyRepository, form, navigate, pathVariable.id, redirectPath, user]);
@@ -471,11 +474,9 @@ const Edit: React.FC = () => {
         contents: content.map((c) => c.description.id),
       };
       setLoading(true);
-      const response = await JourneyRepository.updateJourney(
-        requestData,
-        pathVariable.id,
-        undefined
-      );
+      const response = await JourneyRepository.updateJourney(requestData, {
+        pathVariable: pathVariable.id,
+      });
       setLoading(false);
       if (!response.success) {
         window.alert("여정을 수정하는데 실패했습니다");
@@ -715,16 +716,16 @@ const List: React.FC = () => {
 
   const getData = useCallback(
     async (paginationQuery: PaginationQuery) => {
-      const response = await JourneyRepository.getAllJourney(
-        undefined,
-        paginationQuery
-      );
+      const response = await JourneyRepository.getAllJourney({
+        query: paginationQuery,
+      });
       if (!response.success || !response.response) {
         window.alert("여정을 가져오는데 실패했습니다.");
         return;
       }
       const res = response.response;
-      setData(res.data);
+      const data = res.data.map((d) => journeyResponseConverter(d));
+      setData(data);
       setTotal(res.total);
     },
     [JourneyRepository]
@@ -796,11 +797,9 @@ const AddComment: React.FC<AddCommentProps> = ({ journeyId, addComment }) => {
         comment: formData.comment,
       };
       setLoading(true);
-      const response = await JourneyRepository.postComment(
-        requestData,
-        journeyId.toString(),
-        undefined
-      );
+      const response = await JourneyRepository.postComment(requestData, {
+        pathVariable: journeyId.toString(),
+      });
       setLoading(false);
 
       if (!response.success) {
@@ -871,10 +870,10 @@ const JourneyComment: React.FC<CommentProps> = ({ journeyId }) => {
 
   const getData = useCallback(
     async (paginationQuery: PaginationQuery) => {
-      const response = await JourneyRepository.getComments(
-        journeyId.toString(),
-        paginationQuery
-      );
+      const response = await JourneyRepository.getComments({
+        pathVariable: journeyId.toString(),
+        query: paginationQuery,
+      });
       if (response.success) {
         const pResponse =
           response.response as PaginationResponse<JourneyCommentType>;
@@ -1052,11 +1051,9 @@ const EditComment: React.FC<EditCommentProps> = ({
     try {
       const formData = await form.validateFields();
       setLoading(true);
-      const response = await JourneyRepository.updateComment(
-        formData,
-        data.id.toString(),
-        undefined
-      );
+      const response = await JourneyRepository.updateComment(formData, {
+        pathVariable: data.id.toString(),
+      });
       setLoading(false);
       if (!response.success) {
         const error = response.error as ErrorResponse;

@@ -14,7 +14,12 @@ import {
 import Journey from "../component/Journey";
 import { DescriptionType } from "../../types/Description.type";
 import Description from "../component/Description";
-import { JourneyCommentType, JourneyType } from "../../types/Journey.type";
+import {
+  JourneyCommentType,
+  journeyResponseConverter,
+  JourneyResponse,
+  JourneyType,
+} from "../../types/Journey.type";
 import { UpdateNicknameForm } from "../../types/User.type";
 import PaymentMethod from "../component/PaymentMethod";
 import Order from "../component/Order";
@@ -31,7 +36,7 @@ const Profile: React.FC = () => {
 
   return (
     <Descriptions title="프로필" bordered column={1}>
-      <Descriptions.Item label="계정">{user.account}</Descriptions.Item>
+      {/* <Descriptions.Item label="계정">{user.account}</Descriptions.Item> */}
       <Descriptions.Item label="닉네임">
         <Typography.Text style={{ marginRight: "1rem" }}>
           {user.nickname}
@@ -40,7 +45,7 @@ const Profile: React.FC = () => {
           userData={user}
           updateNickname={updateNickname}
           postNickname={(data: UpdateNicknameForm) => {
-            return UserRepository.postNickname(data, undefined, undefined);
+            return UserRepository.postNickname(data);
           }}
         />
       </Descriptions.Item>
@@ -94,10 +99,9 @@ const DescriptionPage: React.FC = () => {
       if (!user) {
         return;
       }
-      const response = await UserRepository.getUserDescriptions(
-        undefined,
-        pagination
-      );
+      const response = await UserRepository.getUserDescriptions({
+        query: pagination,
+      });
       if (!response.success) {
         window.alert("데이터를 가져오는데 실패했습니다.");
         return;
@@ -180,17 +184,16 @@ const JourneyPage: React.FC = () => {
         return;
       }
       //todo - nickname으로 변경 확인
-      const response = await UserRepository.getUserJourneys(
-        undefined,
-        pagination
-      );
+      const response = await UserRepository.getUserJourneys({
+        query: pagination,
+      });
 
       if (!response.success) {
         window.alert("데이터를 가져오는데 실패했습니다.");
         return;
       }
-      const data = response.response as PaginationResponse<JourneyType>;
-      setData(data.data);
+      const data = response.response as PaginationResponse<JourneyResponse>;
+      setData(data.data.map((d) => journeyResponseConverter(d)));
       setTotal(data.total);
     },
     [UserRepository, user]
@@ -246,10 +249,9 @@ const CommentPage: React.FC = () => {
         return;
       }
       //todo - 닉네임으로 변경 확인
-      const response = await UserRepository.getUserComments(
-        undefined,
-        pagination
-      );
+      const response = await UserRepository.getUserComments({
+        query: pagination,
+      });
 
       if (!response.success) {
         window.alert("데이터를 가져오는데 실패했습니다.");

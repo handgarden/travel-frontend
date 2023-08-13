@@ -3,7 +3,6 @@ import { Route, Routes } from "react-router-dom";
 import DefaultLayout from "./core/layout/DefaultLayout";
 import ErrorPage from "./core/page/error/ErrorPage";
 import AuthRoute from "./core/router/AuthRoute";
-import AdminRoute, { adminPath } from "./admin/router/AdminRoute";
 import UserRoute from "./core/router/UserRoute";
 import ErrorRoute from "./core/router/ErrorRoute";
 import DestinationRoute from "./core/router/DestinationRoute";
@@ -26,13 +25,6 @@ function App() {
         errorElement={<ErrorPage />}
       >
         {UserRoute()}
-      </Route>
-      <Route
-        path={adminPath.ADMIN}
-        element={<UserLayout />}
-        errorElement={<ErrorPage />}
-      >
-        {AdminRoute()}
       </Route>
       {AuthRoute()}
       {ErrorRoute()}

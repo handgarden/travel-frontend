@@ -78,11 +78,7 @@ const RegisterForm: React.FC<Props> = ({ itemSize }) => {
         nickname: formData.nickname,
       };
       setLoading(true);
-      const response = await AuthRepository.postRegister(
-        registerData,
-        undefined,
-        undefined
-      );
+      const response = await AuthRepository.postRegister(registerData);
       setLoading(false);
       if (response.success) {
         window.alert("회원 가입 성공.");

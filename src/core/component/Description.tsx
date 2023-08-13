@@ -106,8 +106,7 @@ const Add: React.FC<AddDescriptionProps> = ({
       setLoading(true);
       const response = await DestinationRepository.postDescription(
         requestData,
-        destinationId.toString(),
-        undefined
+        { pathVariable: destinationId.toString() }
       );
       setLoading(false);
       if (!response.success) {
@@ -254,8 +253,7 @@ const Edit: React.FC<EditProps> = ({ data, cancle, updateDescription }) => {
     setLoading(true);
     const response = await DescriptionRepository.updateDescription(
       requestData,
-      data.id.toString(),
-      undefined
+      { pathVariable: data.id.toString() }
     );
     setLoading(false);
     if (!response.success) {
@@ -480,10 +478,10 @@ const List: React.FC<ListProps> = ({
 
   const getDescriptions = useCallback(
     async (paginationQuery: PaginationQuery) => {
-      const response = await DestinationRepository.getDescriptions(
-        destinationId.toString(),
-        paginationQuery
-      );
+      const response = await DestinationRepository.getDescriptions({
+        pathVariable: destinationId.toString(),
+        query: paginationQuery,
+      });
       if (!response.success) {
         window.alert("후기를 가져오는데 실패했습니다.");
         return;

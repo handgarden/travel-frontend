@@ -75,11 +75,9 @@ const Elem: React.FC<ElemProps> = ({
     if (!window.confirm("정말로 예약을 확정하시겠습니까?")) {
       return;
     }
-    const response = await AccommodationRepository.confirmOrder(
-      undefined,
-      data.id,
-      undefined
-    );
+    const response = await AccommodationRepository.confirmOrder(undefined, {
+      pathVariable: data.id,
+    });
     if (response.success) {
       window.alert("예약을 성공적으로 확정했습니다.");
       confirm(data.id);
@@ -110,11 +108,9 @@ const Elem: React.FC<ElemProps> = ({
       return;
     }
 
-    const response = await AccommodationRepository.cancelOrder(
-      undefined,
-      data.id,
-      undefined
-    );
+    const response = await AccommodationRepository.cancelOrder(undefined, {
+      pathVariable: data.id,
+    });
     if (response.success) {
       window.alert("예약을 성공적으로 취소했습니다.");
       cancel(data.id);
@@ -203,10 +199,9 @@ const List: React.FC = () => {
 
   const getData = useCallback(
     async (paginationQuery: PaginationQuery) => {
-      const response = await AccommodationRepository.getOrders(
-        undefined,
-        paginationQuery
-      );
+      const response = await AccommodationRepository.getOrders({
+        query: paginationQuery,
+      });
       if (response.success) {
         const data = response.response as PaginationResponse<RoomOrderType>;
         setOrders(data.data);
@@ -300,10 +295,10 @@ const SalesList: React.FC<SalesListProps> = ({ roomId }) => {
 
   const getData = useCallback(
     async (paginationQuery: PaginationQuery) => {
-      const response = await AccommodationRepository.getOrdersByRoom(
-        roomId,
-        paginationQuery
-      );
+      const response = await AccommodationRepository.getOrdersByRoom({
+        pathVariable: roomId,
+        query: paginationQuery,
+      });
       if (response.success) {
         const data = response.response as PaginationResponse<RoomOrderType>;
         setOrders(data.data);

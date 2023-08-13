@@ -15,7 +15,7 @@ const LogoutButton: React.FC<Props> = ({ size = "middle", ghost = false }) => {
   const { AuthRepository } = useRepository();
 
   const sendLogout = () => {
-    AuthRepository.postLogout(undefined, undefined, undefined);
+    AuthRepository.postLogout();
     logout();
   };
 

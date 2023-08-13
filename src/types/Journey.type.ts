@@ -1,9 +1,25 @@
+import { convertObjectIncludeCategory } from "../lib/const/category";
 import { DescriptionType } from "./Description.type";
 import {
   DestinationInfoResponse,
   DestinationInfoType,
 } from "./Destination.type";
 import { MemberBasicProfile } from "./User.type";
+
+export const jouryneyContentResponseConverter = (
+  j: JourneyContentResponse
+) => ({
+  ...j,
+  destination: convertObjectIncludeCategory(j.destination),
+});
+
+export const journeyResponseConverter = (d: JourneyResponse) => ({
+  ...d,
+  journeyContents: d.journeyContents.map((j) => ({
+    ...j,
+    destination: convertObjectIncludeCategory(j.destination),
+  })),
+});
 
 export type JourneyContentResponse = {
   destination: DestinationInfoResponse;

@@ -75,11 +75,7 @@ const UpdatePassword: React.FC<Props> = ({ logout }) => {
         prevRawPassword: data.prevPassword,
         newRawPassword: data.newPassword,
       };
-      const response = await UserRepository.postPassword(
-        requestData,
-        undefined,
-        undefined
-      );
+      const response = await UserRepository.postPassword(requestData);
       if (!response.success) {
         const error = response.error;
         //form 문제인 경우
@@ -101,7 +97,7 @@ const UpdatePassword: React.FC<Props> = ({ logout }) => {
       window.alert(
         "비밀번호를 성공적으로 변경했습니다. 새 비밀번호로 다시 로그인해주세요."
       );
-      await AuthRepository.postLogout(undefined, undefined, undefined);
+      await AuthRepository.postLogout();
       logout();
       navigate("/login");
     } catch (e) {}

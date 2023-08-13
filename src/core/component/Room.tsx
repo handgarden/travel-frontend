@@ -159,10 +159,10 @@ const List: React.FC<ListProps> = ({ dataId, isOwner }) => {
   const getRooms = useCallback(
     async (dateQuery: RoomDateQuery) => {
       setLoading(true);
-      const response = await AccommodationRepository.getRoomsForReserve(
-        dataId.toString(),
-        dateQuery
-      );
+      const response = await AccommodationRepository.getRoomsForReserve({
+        pathVariable: dataId.toString(),
+        query: dateQuery,
+      });
       if (!response.success) {
         window.alert("여행지 데이터를 가져오는데 실패했습니다.");
         return;
@@ -274,11 +274,9 @@ const Add: React.FC<AddProps> = ({ dataId, isOwner }) => {
         inTime: data.inTime.format("HH:mm"),
       };
       setLoading(true);
-      const response = await AccommodationRepository.createRoom(
-        requestData,
-        dataId,
-        undefined
-      );
+      const response = await AccommodationRepository.createRoom(requestData, {
+        pathVariable: dataId,
+      });
       setLoading(false);
       if (!response.success) {
         if (response.error) {
@@ -399,7 +397,9 @@ const Reserve: React.FC<ReserveProps> = ({ roomId }) => {
   const { AccommodationRepository } = useRepository();
 
   const getData = useCallback(async () => {
-    const response = await AccommodationRepository.getRoom(roomId);
+    const response = await AccommodationRepository.getRoom({
+      pathVariable: roomId,
+    });
     if (response.success) {
       const data = response.response as RoomType;
       setRoom(data);
@@ -442,8 +442,7 @@ const Reserve: React.FC<ReserveProps> = ({ roomId }) => {
     };
     const response = await AccommodationRepository.reserveRoom(
       reserveRoomForm,
-      roomId,
-      undefined
+      { pathVariable: roomId }
     );
     if (response.success) {
       navigate(userPath.ORDER, { replace: true });
@@ -570,10 +569,9 @@ const SalesList = () => {
 
   const getData = useCallback(
     async (pagination: PaginationQuery) => {
-      const response = await AccommodationRepository.getRoomsByProducer(
-        undefined,
-        pagination
-      );
+      const response = await AccommodationRepository.getRoomsByProducer({
+        query: pagination,
+      });
 
       if (response.success) {
         const data = response.response as PaginationResponse<RoomType>;

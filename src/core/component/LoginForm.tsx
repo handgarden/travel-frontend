@@ -3,7 +3,7 @@ import { useCallback, useContext, useRef, useState } from "react";
 import AuthContext from "../../context/AuthContext";
 import { useLocation } from "react-router-dom";
 import useRepository from "../hook/useRepository";
-import { MemberProfile } from "../../types/User.type";
+import { MemberBasicProfile } from "../../types/User.type";
 
 type Props = {
   itemSize?: string;
@@ -36,15 +36,11 @@ export const LoginForm: React.FC<Props> = ({ itemSize }) => {
     };
 
     setLoading(true);
-    const userData = await AuthRepository.postLogin(
-      loginData,
-      undefined,
-      undefined
-    );
+    const userData = await AuthRepository.postLogin(loginData);
     setLoading(false);
 
     if (userData.success) {
-      const data = userData.response as MemberProfile;
+      const data = userData.response as MemberBasicProfile;
       const redirect = query ? query : "/";
       login(data, redirect);
       return;
