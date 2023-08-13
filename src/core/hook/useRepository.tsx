@@ -9,24 +9,13 @@ import {
   MemberProfile,
   UpdateNicknameForm,
   UpdatePasswordForm,
-  MemberProfileResponse,
-  MemberDetailProfileResponse,
-  MemberDetailProfile,
 } from "../../types/User.type";
 import { useCallback, useMemo } from "react";
-import { CATEGORY } from "../../lib/const/category";
 import { LoginForm, RegisterData } from "../../types/Auth.type";
-import {
-  UserBanRequest,
-  UserListQuery,
-  UserRoleUpdate,
-} from "../../types/Admin.type";
-import roles from "../../lib/const/auth/role";
 import {
   CreateDestinationForm,
   UpdateDestinationForm,
   DestinationResponse,
-  DestinationType,
 } from "../../types/Destination.type";
 import {
   DescriptionType,
@@ -40,10 +29,8 @@ import {
   JourneyCommentType,
   JourneyCommentUpdateForm,
   JourneyContentResponse,
-  JourneyContentType,
   JourneyForm,
   JourneyResponse,
-  JourneyType,
 } from "../../types/Journey.type";
 import {
   CreateRoomForm,
@@ -72,13 +59,24 @@ const serverErrorTemplateGenerator = <K,>(): ResponseTemplate<K> => {
   };
 };
 
+const JWT_KEY = "jwt";
+
+type QueryOptions<P, Q> = {
+  pathVariable?: P;
+  query?: Q;
+};
+
 class Repository {
   private defaultPath: string;
   private httpClient = axios.create({
     baseURL: process.env.REACT_APP_API_HOST,
     timeout: 5000,
     withCredentials: true,
+    headers: {
+      accept: "application/json",
+    },
   });
+
   private checkAuthFunc: (response: ResponseTemplate<Object>) => void;
 
   constructor(
@@ -93,96 +91,91 @@ class Repository {
     return this.httpClient;
   };
 
-  public createPost = <
-    T,
-    J extends Object,
-    K = J,
-    P = undefined,
-    Q = undefined
-  >(
+  public createPost = <T, R extends Object, P = undefined, Q = undefined>(
     path: string,
-    convertData: (d: J) => K = (response: J) => response as unknown as K,
     disableCheck = false
   ) => {
-    return async (request: T, pathVariable: P, query: Q) => {
+    return async (request: T, options?: QueryOptions<P, Q>) => {
       let convertedPath = path;
-      if (pathVariable) {
-        const splitPath = path.split("{pv}");
-        const applyPath = `${splitPath[0]}${pathVariable}${splitPath[1]}`;
-        convertedPath = applyPath;
-      }
-      if (query instanceof Object) {
-        if ("page" in query) {
-          const page = query["page"] as number;
-          query = {
-            ...query,
-            page: page - 1,
-          };
+      if (options) {
+        if (options.pathVariable) {
+          const splitPath = path.split("{pv}");
+          const applyPath = `${splitPath[0]}${options.pathVariable}${splitPath[1]}`;
+          convertedPath = applyPath;
         }
+        if (options.query instanceof Object) {
+          if ("page" in options.query) {
+            const page = options.query["page"] as number;
+            options.query = {
+              ...options.query,
+              page: page - 1,
+            };
+          }
+        }
+        const qs = QueryString.stringify(options.query, {
+          arrayFormat: "repeat",
+        });
+        convertedPath += `?${qs}`;
       }
-      const qs = QueryString.stringify(query, { arrayFormat: "repeat" });
-      convertedPath += `?${qs}`;
 
       try {
         const response = await this.httpClient.post<
           T,
-          AxiosResponse<ResponseTemplate<J>>
-        >(this.defaultPath + convertedPath, request);
+          AxiosResponse<ResponseTemplate<R>>
+        >(this.defaultPath + convertedPath, request, {
+          headers: { authorization: `bearer ${localStorage.getItem(JWT_KEY)}` },
+        });
         const data = response.data;
         if (!disableCheck) {
           this.checkAuthFunc(data);
         }
-        const convertedData: ResponseTemplate<K> = {
-          ...data,
-          response: data.response ? convertData(data.response) : null,
-        };
-        return convertedData;
+        return data;
       } catch (e) {
-        return serverErrorTemplateGenerator<K>();
+        return serverErrorTemplateGenerator<R>();
       }
     };
   };
 
-  public createGet = <T extends Object, K = T, P = undefined, Q = undefined>(
+  public createGet = <R extends Object, P = undefined, Q = undefined>(
     path: string,
-    convertData: (r: T) => K = (response: T) => response as unknown as K,
     disableCheck = false
   ) => {
-    return async (pathVariable: P, query: Q) => {
+    return async (options?: QueryOptions<P, Q>) => {
       let convertedPath = path;
-      if (pathVariable) {
-        const splitPath = path.split("{pv}");
-        const applyPath = `${splitPath[0]}${pathVariable}${splitPath[1]}`;
-        convertedPath = applyPath;
-      }
-      if (query instanceof Object) {
-        if ("page" in query) {
-          const page = query["page"] as number;
-          query = {
-            ...query,
-            page: page - 1,
-          };
+      if (options) {
+        if (options.pathVariable) {
+          const splitPath = path.split("{pv}");
+          const applyPath = `${splitPath[0]}${options.pathVariable}${splitPath[1]}`;
+          convertedPath = applyPath;
         }
+        if (options.query instanceof Object) {
+          if ("page" in options.query) {
+            const page = options.query["page"] as number;
+            options.query = {
+              ...options.query,
+              page: page - 1,
+            };
+          }
+        }
+        const qs = QueryString.stringify(options.query, {
+          arrayFormat: "repeat",
+        });
+        convertedPath += `?${qs}`;
       }
-      const qs = QueryString.stringify(query, { arrayFormat: "repeat" });
-      convertedPath += `?${qs}`;
-
       try {
         const response = await this.httpClient.get<
           void,
-          AxiosResponse<ResponseTemplate<T>>
-        >(this.defaultPath + convertedPath);
+          AxiosResponse<ResponseTemplate<R>>
+        >(this.defaultPath + convertedPath, {
+          headers: { authorization: `bearer ${localStorage.getItem(JWT_KEY)}` },
+        });
         const data = response.data;
         if (!disableCheck) {
           this.checkAuthFunc(data);
         }
-        const convertedData: ResponseTemplate<K> = {
-          ...data,
-          response: data.response ? convertData(data.response) : null,
-        };
-        return convertedData;
+        return data;
       } catch (e) {
-        return serverErrorTemplateGenerator<K>();
+        return serverErrorTemplateGenerator<R>();
       }
     };
   };
@@ -190,7 +183,7 @@ class Repository {
 
 /**
  * 세션 만료 검증
- * 세션이 만료됐으면 메모리에 저장돼있는 유저 정보 제거함
+ * 토큰이 만료됐으면 메모리에 저장돼있는 유저 정보 제거함
  * @returns checkAuthByResponse
  */
 const useCheckAuthByResponse = () => {
@@ -219,48 +212,27 @@ const useAuthRepository = () => {
   );
 
   const postLogin = useMemo(
-    () =>
-      repository.createPost<LoginForm, MemberProfileResponse, MemberProfile>(
-        "/login",
-        (d) => ({
-          ...d,
-          role: roles[d.role],
-        })
-      ),
-    [repository]
-  );
-
-  const postLoginWithSession = useMemo(
-    () =>
-      repository.createPost<void, MemberProfileResponse, MemberProfile>(
-        "/session",
-        (d) => ({
-          ...d,
-          role: roles[d.role],
-        })
-      ),
+    () => repository.createPost<LoginForm, MemberProfile>("/login"),
     [repository]
   );
 
   const postLogout = useMemo(
-    () => repository.createPost<void, "ok">("/logout", undefined, true),
+    () => repository.createPost<void, "ok">("/logout", true),
     [repository]
   );
 
   const postRegister = useMemo(
-    () =>
-      repository.createPost<RegisterData, "ok">("/register", undefined, true),
+    () => repository.createPost<RegisterData, "ok">("/register", true),
     [repository]
   );
 
   const repo = useMemo(
     () => ({
       postLogin,
-      postLoginWithSession,
       postLogout,
       postRegister,
     }),
-    [postLogin, postLoginWithSession, postLogout, postRegister]
+    [postLogin, postLogout, postRegister]
   );
 
   return repo;
@@ -287,27 +259,13 @@ const useUserRepository = () => {
   const getUserDestinations = useMemo(() => {
     return repository.createGet<
       PaginationResponse<DestinationResponse>,
-      PaginationResponse<DestinationType>,
       undefined,
       ItemListQuery
-    >(
-      "/destinations",
-      (response: PaginationResponse<DestinationResponse>) => {
-        return {
-          ...response,
-          data: response.data.map((d) => ({
-            ...d,
-            category: CATEGORY[d.category],
-          })),
-        };
-      },
-      true
-    );
+    >("/destinations", true);
   }, [repository]);
 
   const getUserDescriptions = useMemo(() => {
     return repository.createGet<
-      PaginationResponse<DescriptionType>,
       PaginationResponse<DescriptionType>,
       undefined,
       PaginationQuery
@@ -317,31 +275,17 @@ const useUserRepository = () => {
   const getUserJourneys = useMemo(() => {
     return repository.createGet<
       PaginationResponse<JourneyResponse>,
-      PaginationResponse<JourneyType>,
       undefined,
       PaginationQuery
-    >("/journeys", (d) => ({
-      ...d,
-      data: d.data.map((j) => ({
-        ...j,
-        journeyContents: j.journeyContents.map((c) => ({
-          ...c,
-          destination: {
-            ...c.destination,
-            category: CATEGORY[c.destination.category],
-          },
-        })),
-      })),
-    }));
+    >("/journeys");
   }, [repository]);
 
   const getUserComments = useMemo(() => {
     return repository.createGet<
       PaginationResponse<JourneyCommentType>,
-      PaginationResponse<JourneyCommentType>,
       undefined,
       PaginationQuery
-    >("/comments", (d) => d);
+    >("/comments");
   }, [repository]);
 
   const repo = useMemo(
@@ -360,84 +304,6 @@ const useUserRepository = () => {
       getUserJourneys,
       postNickname,
       postPassword,
-    ]
-  );
-
-  return repo;
-};
-
-const useAdminRepository = () => {
-  const checkAuthByResponse = useCheckAuthByResponse();
-
-  const repository = useMemo(
-    () => new Repository("/admin", checkAuthByResponse),
-    [checkAuthByResponse]
-  );
-
-  const getMemberProfiles = useMemo(
-    () =>
-      repository.createGet<
-        PaginationResponse<MemberProfileResponse>,
-        PaginationResponse<MemberProfile>,
-        undefined,
-        UserListQuery
-      >("/members", (d) => ({
-        ...d,
-        data: d.data.map((m) => ({ ...m, role: roles[m.role] })),
-      })),
-    [repository]
-  );
-
-  const getUserDetail = useMemo(
-    () =>
-      repository.createGet<
-        MemberDetailProfileResponse,
-        MemberDetailProfile,
-        string
-      >("/members/{pv}", (d) => ({
-        ...d,
-        role: roles[d.role],
-      })),
-    [repository]
-  );
-
-  const postNickname = useMemo(
-    () => repository.createPost<UpdateNicknameForm, "ok">("/members/nickname"),
-    [repository]
-  );
-
-  const postRole = useMemo(
-    () => repository.createPost<UserRoleUpdate, "ok">("/members/role"),
-    [repository]
-  );
-
-  const postBan = useMemo(
-    () => repository.createPost<UserBanRequest, "ok">("/members/ban"),
-    [repository]
-  );
-
-  const postUnban = useMemo(
-    () =>
-      repository.createPost<void, "ok", "ok", string>("/members/unban/{pv}"),
-    [repository]
-  );
-
-  const repo = useMemo(
-    () => ({
-      getUserInfoList: getMemberProfiles,
-      getUserDetail,
-      postNickname,
-      postRole,
-      postBan,
-      postUnban,
-    }),
-    [
-      getUserDetail,
-      getMemberProfiles,
-      postBan,
-      postNickname,
-      postRole,
-      postUnban,
     ]
   );
 
@@ -455,40 +321,17 @@ const useDestinationRepository = () => {
   const getDestinations = useMemo(() => {
     return repository.createGet<
       PaginationResponse<DestinationResponse>,
-      PaginationResponse<DestinationType>,
       undefined,
       ItemListQuery
-    >(
-      "",
-      (response: PaginationResponse<DestinationResponse>) => {
-        return {
-          ...response,
-          data: response.data.map((d) => ({
-            ...d,
-            category: CATEGORY[d.category],
-          })),
-        };
-      },
-      true
-    );
+    >("", true);
   }, [repository]);
 
   const getDestination = useMemo(() => {
-    return repository.createGet<DestinationResponse, DestinationType, string>(
-      "/{pv}",
-      (d: DestinationResponse) => {
-        return {
-          ...d,
-          category: CATEGORY[d.category],
-        };
-      },
-      true
-    );
+    return repository.createGet<DestinationResponse, string>("/{pv}", true);
   }, [repository]);
 
   const getDestinationThumnails = useMemo(() => {
     return repository.createGet<
-      PaginationResponse<StoreFileName>,
       PaginationResponse<StoreFileName>,
       string,
       PaginationQuery
@@ -512,7 +355,12 @@ const useDestinationRepository = () => {
         const response = await repository
           .getHttpClient()
           .delete<void, AxiosResponse<ResponseTemplate<"ok">>>(
-            `/destinations/${id}`
+            `/destinations/${id}`,
+            {
+              headers: {
+                authorization: `bearer ${localStorage.getItem(JWT_KEY)}`,
+              },
+            }
           );
         const data = response.data;
         checkAuthByResponse(data);
@@ -527,19 +375,15 @@ const useDestinationRepository = () => {
   const getDescriptions = useMemo(() => {
     return repository.createGet<
       PaginationResponse<DescriptionType>,
-      PaginationResponse<DescriptionType>,
       string,
       PaginationQuery
     >("/{pv}/descriptions");
   }, [repository]);
 
   const postDescription = useMemo(() => {
-    return repository.createPost<
-      DescriptionForm,
-      DescriptionType,
-      DescriptionType,
-      string
-    >("/{pv}/descriptions");
+    return repository.createPost<DescriptionForm, DescriptionType, string>(
+      "/{pv}/descriptions"
+    );
   }, [repository]);
 
   const repo = useMemo(
@@ -580,7 +424,6 @@ const useDescriptionRepository = () => {
     return repository.createPost<
       DescriptionUpdateForm,
       DescriptionType,
-      DescriptionType,
       string
     >("/{pv}");
   }, [repository]);
@@ -591,7 +434,12 @@ const useDescriptionRepository = () => {
         const response = await repository
           .getHttpClient()
           .delete<void, AxiosResponse<ResponseTemplate<"ok">>>(
-            `/descriptions/${id}`
+            `/descriptions/${id}`,
+            {
+              headers: {
+                authorization: `bearer ${localStorage.getItem(JWT_KEY)}`,
+              },
+            }
           );
         const data = response.data;
         checkAuthByResponse(data);
@@ -628,7 +476,12 @@ const useFileRepository = () => {
         const response = await repository
           .getHttpClient()
           .delete<void, AxiosResponse<ResponseTemplate<"ok">>>(
-            `/files/${storeFileName}`
+            `/files/${storeFileName}`,
+            {
+              headers: {
+                authorization: `bearer ${localStorage.getItem(JWT_KEY)}`,
+              },
+            }
           );
         const data = response.data;
         checkAuthByResponse(data);
@@ -653,73 +506,24 @@ const useJourneyRepository = () => {
     [checkAuthByResponse]
   );
 
-  const journeyContentResponseToObj = useCallback(
-    (j: JourneyContentResponse): JourneyContentType => ({
-      ...j,
-      destination: {
-        ...j.destination,
-        category: CATEGORY[j.destination.category],
-      },
-    }),
-    []
-  );
-
   const getJourneyContent = useMemo(() => {
     return repository.createGet<
       PaginationResponse<JourneyContentResponse>,
-      PaginationResponse<JourneyContentType>,
       undefined,
       PaginationQuery
-    >(
-      "/contents",
-      (d) => ({
-        ...d,
-        data: d.data.map((j) => journeyContentResponseToObj(j)),
-      }),
-      false
-    );
-  }, [journeyContentResponseToObj, repository]);
+    >("/contents", false);
+  }, [repository]);
 
   const getAllJourney = useMemo(() => {
     return repository.createGet<
       PaginationResponse<JourneyResponse>,
-      PaginationResponse<JourneyType>,
       undefined,
       PaginationQuery
-    >(
-      "",
-      (d) => ({
-        ...d,
-        data: d.data.map((j) => ({
-          ...j,
-          journeyContents: j.journeyContents.map((c) => ({
-            ...c,
-            destination: {
-              ...c.destination,
-              category: CATEGORY[c.destination.category],
-            },
-          })),
-        })),
-      }),
-      false
-    );
+    >("", false);
   }, [repository]);
 
   const getJourney = useMemo(() => {
-    return repository.createGet<JourneyResponse, JourneyType, string>(
-      "/{pv}",
-      (d) => ({
-        ...d,
-        journeyContents: d.journeyContents.map((c) => ({
-          ...c,
-          destination: {
-            ...c.destination,
-            category: CATEGORY[c.destination.category],
-          },
-        })),
-      }),
-      false
-    );
+    return repository.createGet<JourneyResponse, string>("/{pv}", false);
   }, [repository]);
 
   const postJourney = useMemo(
@@ -728,7 +532,7 @@ const useJourneyRepository = () => {
   );
 
   const updateJourney = useMemo(
-    () => repository.createPost<JourneyForm, "ok", "ok", string>("/{pv}"),
+    () => repository.createPost<JourneyForm, "ok", string>("/{pv}"),
     [repository]
   );
 
@@ -738,7 +542,12 @@ const useJourneyRepository = () => {
         const response = await repository
           .getHttpClient()
           .delete<void, AxiosResponse<ResponseTemplate<"ok">>>(
-            `/journeys/${id}`
+            `/journeys/${id}`,
+            {
+              headers: {
+                authorization: `bearer ${localStorage.getItem(JWT_KEY)}`,
+              },
+            }
           );
         const data = response.data;
         checkAuthByResponse(data);
@@ -765,7 +574,6 @@ const useJourneyRepository = () => {
   const getComments = useMemo(() => {
     return repository.createGet<
       PaginationResponse<JourneyCommentType>,
-      PaginationResponse<JourneyCommentType>,
       string,
       PaginationQuery
     >("/{pv}/comments");
@@ -774,7 +582,6 @@ const useJourneyRepository = () => {
   const updateComment = useMemo(() => {
     return repository.createPost<
       JourneyCommentUpdateForm,
-      JourneyCommentType,
       JourneyCommentType,
       string
     >("/comments/{pv}");
@@ -786,7 +593,12 @@ const useJourneyRepository = () => {
         const response = await repository
           .getHttpClient()
           .delete<void, AxiosResponse<ResponseTemplate<"ok">>>(
-            `/journeys/comments/${id}`
+            `/journeys/comments/${id}`,
+            {
+              headers: {
+                authorization: `bearer ${localStorage.getItem(JWT_KEY)}`,
+              },
+            }
           );
         const data = response.data;
         checkAuthByResponse(data);
@@ -837,17 +649,13 @@ const useAccommodationRepository = () => {
   );
 
   const getRoomsForReserve = useMemo(() => {
-    return repository.createGet<
-      RoomReserveType[],
-      RoomReserveType[],
-      string,
-      RoomDateQuery
-    >("/{pv}");
+    return repository.createGet<RoomReserveType[], string, RoomDateQuery>(
+      "/{pv}"
+    );
   }, [repository]);
 
   const getRoomsByProducer = useMemo(() => {
     return repository.createGet<
-      PaginationResponse<RoomType>,
       PaginationResponse<RoomType>,
       void,
       PaginationQuery
@@ -855,25 +663,19 @@ const useAccommodationRepository = () => {
   }, [repository]);
 
   const getRoom = useMemo(() => {
-    return repository.createGet<RoomType, RoomType, number, void>(
-      "/rooms/{pv}"
-    );
+    return repository.createGet<RoomType, number>("/rooms/{pv}");
   }, [repository]);
 
   const createRoom = useMemo(() => {
-    return repository.createPost<CreateRoomForm, "ok", "ok", number>("/{pv}");
+    return repository.createPost<CreateRoomForm, "ok", number>("/{pv}");
   }, [repository]);
 
   const reserveRoom = useMemo(() => {
-    return repository.createPost<ReserveRoomForm, "ok", "ok", number>(
-      "/rooms/{pv}"
-    );
+    return repository.createPost<ReserveRoomForm, "ok", number>("/rooms/{pv}");
   }, [repository]);
 
   const confirmOrder = useMemo(() => {
-    return repository.createPost<void, "ok", "ok", number>(
-      "/orders/{pv}/confirm"
-    );
+    return repository.createPost<void, "ok", number>("/orders/{pv}/confirm");
   }, [repository]);
 
   const cancelOrder = useMemo(() => {
@@ -885,7 +687,6 @@ const useAccommodationRepository = () => {
   const getOrders = useMemo(() => {
     return repository.createGet<
       PaginationResponse<RoomOrderType>,
-      PaginationResponse<RoomOrderType>,
       undefined,
       PaginationQuery
     >("/orders");
@@ -893,7 +694,6 @@ const useAccommodationRepository = () => {
 
   const getOrdersByRoom = useMemo(() => {
     return repository.createGet<
-      PaginationResponse<RoomOrderType>,
       PaginationResponse<RoomOrderType>,
       number,
       PaginationQuery
@@ -954,7 +754,12 @@ const usePaymentRepository = () => {
         const response = await repository
           .getHttpClient()
           .delete<void, AxiosResponse<ResponseTemplate<"ok">>>(
-            `/payment/${id}`
+            `/payment/${id}`,
+            {
+              headers: {
+                authorization: `bearer ${localStorage.getItem(JWT_KEY)}`,
+              },
+            }
           );
         const data = response.data;
         checkAuthByResponse(data);
@@ -982,7 +787,6 @@ const usePaymentRepository = () => {
 const useRepository = () => {
   const UserRepository = useUserRepository();
   const AuthRepository = useAuthRepository();
-  const AdminRepository = useAdminRepository();
   const DestinationRepository = useDestinationRepository();
   const FileRepository = useFileRepository();
   const JourneyRepository = useJourneyRepository();
@@ -994,7 +798,6 @@ const useRepository = () => {
     () => ({
       UserRepository,
       AuthRepository,
-      AdminRepository,
       DestinationRepository,
       DescriptionRepository,
       FileRepository,
@@ -1005,7 +808,6 @@ const useRepository = () => {
     [
       UserRepository,
       AuthRepository,
-      AdminRepository,
       DestinationRepository,
       DescriptionRepository,
       FileRepository,
