@@ -31,7 +31,6 @@ const Profile: React.FC = () => {
 
   return (
     <Descriptions title="프로필" bordered column={1}>
-      <Descriptions.Item label="권한">{user.role.kr}</Descriptions.Item>
       <Descriptions.Item label="계정">{user.account}</Descriptions.Item>
       <Descriptions.Item label="닉네임">
         <Typography.Text style={{ marginRight: "1rem" }}>

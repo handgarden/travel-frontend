@@ -22,13 +22,10 @@ import MemberNavbar from "../component/MemberNavbar";
 import Sider from "antd/es/layout/Sider";
 import styles from "./Sidebar.module.scss";
 import DefaultIcon from "../component/DefaultIcon";
-import { adminPath } from "../../admin/router/AdminRoute";
-import { useAuth } from "../../context/AuthContext";
 
 const UserMenu: React.FC = () => {
   const location = useLocation();
   const path = location.pathname.split("/")[2];
-  const { user } = useAuth();
   const items: MenuProps["items"] = useMemo(() => {
     const arr = [
       getItem(
@@ -74,18 +71,8 @@ const UserMenu: React.FC = () => {
         ),
       ]),
     ];
-    const userRole = user?.role.type;
-    if (userRole === "ADMIN" || userRole === "MANAGER") {
-      arr.push(
-        getItem(
-          <Link to={adminPath.ADMIN}>{"회원 관리"}</Link>,
-          "admin",
-          <UserSwitchOutlined />
-        )
-      );
-    }
     return arr;
-  }, [user?.role.type]);
+  }, []);
 
   return (
     <Menu
