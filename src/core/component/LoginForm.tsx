@@ -30,7 +30,7 @@ export const LoginForm: React.FC<Props> = ({ itemSize }) => {
   form.submit = useCallback(async () => {
     const loginData = {
       account: account.current?.input ? account.current.input.value : "",
-      rawPassword: rawPassword.current?.input
+      password: rawPassword.current?.input
         ? rawPassword.current.input.value
         : "",
     };

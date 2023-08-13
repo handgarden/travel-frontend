@@ -74,7 +74,7 @@ const RegisterForm: React.FC<Props> = ({ itemSize }) => {
       }
       const registerData: RegisterData = {
         account: formData.account,
-        rawPassword: formData.rawPassword,
+        password: formData.password,
         nickname: formData.nickname,
       };
       setLoading(true);
@@ -117,7 +117,7 @@ const RegisterForm: React.FC<Props> = ({ itemSize }) => {
       <Form.Item label="계정" name="account" rules={accountRules}>
         <Input className={itemSize} />
       </Form.Item>
-      <Form.Item label="비밀번호" name="rawPassword" rules={passwordRules}>
+      <Form.Item label="비밀번호" name="password" rules={passwordRules}>
         <Input.Password className={itemSize} onChange={validatePassword} />
       </Form.Item>
       <Form.Item
