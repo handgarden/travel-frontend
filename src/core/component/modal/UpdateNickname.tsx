@@ -11,6 +11,10 @@ import {
   MemberBasicProfile,
   UpdateNicknameForm,
 } from "../../../types/User.type";
+import {
+  DUPLICATE_MESSAGE,
+  SERVER_ERROR_MESSAGE,
+} from "../../../lib/func/message";
 
 type Props = {
   userData: MemberBasicProfile;
@@ -52,11 +56,14 @@ const UpdateNickname: React.FC<Props> = ({
       if (!response.success) {
         const error = response.error;
         if (error && error.message) {
-          setGlobalError(error.message);
-        } else {
-          if (error && error.bindingErrors.length > 0) {
-            setGlobalError(error.bindingErrors[0].defaultMessage);
+          const message = error.message;
+          if (message.includes("duplicate")) {
+            setGlobalError(DUPLICATE_MESSAGE("닉네임"));
+          } else {
+            setGlobalError(SERVER_ERROR_MESSAGE);
           }
+        } else {
+          setGlobalError(SERVER_ERROR_MESSAGE);
         }
         return;
       } else {
