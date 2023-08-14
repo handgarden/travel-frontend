@@ -35,6 +35,11 @@ export const LoginForm: React.FC<Props> = ({ itemSize }) => {
         : "",
     };
 
+    if (loginData.account.length < 4 || loginData.password.length < 8) {
+      setGlobalError("가입되지 않은 회원이거나 잘못된 암호를 입력하셨습니다.");
+      return;
+    }
+
     setLoading(true);
     const userData = await AuthRepository.postLogin(loginData);
     setLoading(false);
@@ -47,11 +52,9 @@ export const LoginForm: React.FC<Props> = ({ itemSize }) => {
     }
 
     const errorData = userData.error;
-    if (errorData && errorData.status === 401) {
-      setGlobalError(
-        errorData.message ||
-          "가입되지 않은 회원이거나 잘못된 암호를 입력하셨습니다."
-      );
+    console.log(errorData);
+    if (errorData && errorData.status === 400) {
+      setGlobalError("가입되지 않은 회원이거나 잘못된 암호를 입력하셨습니다.");
       return;
     }
 
