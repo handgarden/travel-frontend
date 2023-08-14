@@ -3,15 +3,24 @@ import { useState } from "react";
 import { nicknameRules } from "../../../lib/validation/rule/validation.rule";
 import { validationMessages } from "../../../lib/validation/validation.message";
 import useModalState from "../../hook/useModalState";
-import { ResponseTemplate } from "../../../types/repository/basic.type";
+import {
+  BASIC_SUCCESS_MESSAGE,
+  ResponseTemplate,
+} from "../../../types/repository/basic.type";
 import {
   MemberBasicProfile,
   UpdateNicknameForm,
 } from "../../../types/User.type";
+import {
+  DUPLICATE_MESSAGE,
+  SERVER_ERROR_MESSAGE,
+} from "../../../lib/func/message";
 
 type Props = {
   userData: MemberBasicProfile;
-  postNickname: (data: UpdateNicknameForm) => Promise<ResponseTemplate<"ok">>;
+  postNickname: (
+    data: UpdateNicknameForm
+  ) => Promise<ResponseTemplate<BASIC_SUCCESS_MESSAGE>>;
   updateNickname: (newNickname: string) => void;
 };
 
@@ -40,19 +49,23 @@ const UpdateNickname: React.FC<Props> = ({
         return;
       }
       const data: UpdateNicknameForm = {
-        ...formData,
-        nickname: userData.nickname,
+        nickname: formData.newNickname,
       };
       const response = await postNickname(data);
 
       if (!response.success) {
         const error = response.error;
         if (error && error.message) {
-          setGlobalError(error.message);
-        } else {
-          if (error && error.bindingErrors.length > 0) {
-            setGlobalError(error.bindingErrors[0].defaultMessage);
+          const message = error.message;
+          //중복
+          if (message.includes("duplicate")) {
+            setGlobalError(DUPLICATE_MESSAGE("닉네임"));
+          } else {
+            //검증
+            setGlobalError("닉네임 생성 규칙을 지켜주세요.");
           }
+        } else {
+          setGlobalError(SERVER_ERROR_MESSAGE);
         }
         return;
       } else {
@@ -60,8 +73,8 @@ const UpdateNickname: React.FC<Props> = ({
       }
 
       window.alert("닉네임을 성공적으로 변경했습니다.");
-      updateNickname(data.newNickname);
-      form.setFieldValue("prevNickname", data.newNickname);
+      updateNickname(formData.newNickname);
+      form.setFieldValue("prevNickname", formData.newNickname);
       form.setFieldValue("newNickname", "");
 
       setIsModalOpen(false);

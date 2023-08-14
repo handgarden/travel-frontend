@@ -15,10 +15,9 @@ export type MemberBasicProfile = {
 
 export type UpdateNicknameForm = {
   nickname: string;
-  newNickname: string;
 };
 
 export type UpdatePasswordForm = {
-  prevRawPassword: string;
-  newRawPassword: string;
+  prevPassword: string;
+  newPassword: string;
 };

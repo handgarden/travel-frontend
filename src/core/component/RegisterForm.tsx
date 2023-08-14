@@ -12,6 +12,7 @@ import {
 import { validationMessages } from "../../lib/validation/validation.message";
 import useRepository from "../hook/useRepository";
 import { RegisterData } from "../../types/Auth.type";
+import { DUPLICATE_MESSAGE } from "../../lib/func/message";
 
 type Props = {
   itemSize: string;
@@ -83,23 +84,38 @@ const RegisterForm: React.FC<Props> = ({ itemSize }) => {
       if (response.success) {
         window.alert("회원 가입 성공.");
         let path = "/login";
-        path += query.redirect ? query.redirect.toString() : "";
+        path += query.redirect ? `?redirect=${query.redirect.toString()}` : "";
         navigate(path);
         return;
       }
 
       const error = response.error;
-      if (error && error.status >= 500) {
-        setGlobalError("서버에 문제가 있습니다. 나중에 다시 시도해주세요.");
-        return;
-      }
-
-      const bindingErrors = error?.bindingErrors;
-      if (bindingErrors && bindingErrors.length > 0) {
-        const bindingError = bindingErrors[0];
-        if (bindingError.codes == null) {
-          setGlobalError(bindingError.defaultMessage);
+      if (error) {
+        //검증 예외, 중복 예외, 그냥 예외
+        if (error.status === 400) {
+          const message = error.message;
+          if (message.includes("duplicate")) {
+            //중복
+            if (message.includes("account")) {
+              setGlobalError(DUPLICATE_MESSAGE("계정"));
+            } else {
+              setGlobalError(DUPLICATE_MESSAGE("닉네임"));
+            }
+          } else {
+            //검증
+            if (message.includes("account")) {
+              setGlobalError("계정 생성 규칙을 지켜주세요.");
+            } else if (message.includes("nickname")) {
+              setGlobalError("닉네임 생성 규칙을 지켜주세요.");
+            } else {
+              setGlobalError("비밀번호 생성 규칙을 지켜주세요.");
+            }
+          }
+        } else {
+          //그냥 예외
+          setGlobalError(DUPLICATE_MESSAGE);
         }
+        return;
       }
     } catch (errorInfo) {}
   };
