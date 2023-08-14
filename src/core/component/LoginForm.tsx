@@ -3,7 +3,7 @@ import { useCallback, useContext, useRef, useState } from "react";
 import AuthContext from "../../context/AuthContext";
 import { useLocation } from "react-router-dom";
 import useRepository from "../hook/useRepository";
-import { MemberBasicProfile } from "../../types/User.type";
+import { LoginResponse } from "../../types/Auth.type";
 
 type Props = {
   itemSize?: string;
@@ -40,7 +40,7 @@ export const LoginForm: React.FC<Props> = ({ itemSize }) => {
     setLoading(false);
 
     if (userData.success) {
-      const data = userData.response as MemberBasicProfile;
+      const data = userData.response as LoginResponse;
       const redirect = query ? query : "/";
       login(data, redirect);
       return;

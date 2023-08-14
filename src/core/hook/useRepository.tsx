@@ -11,7 +11,12 @@ import {
   UpdatePasswordForm,
 } from "../../types/User.type";
 import { useCallback, useMemo } from "react";
-import { LoginForm, RegisterData } from "../../types/Auth.type";
+import {
+  JWT_KEY,
+  LoginForm,
+  LoginResponse,
+  RegisterData,
+} from "../../types/Auth.type";
 import {
   CreateDestinationForm,
   UpdateDestinationForm,
@@ -58,8 +63,6 @@ const serverErrorTemplateGenerator = <K,>(): ResponseTemplate<K> => {
     },
   };
 };
-
-const JWT_KEY = "jwt";
 
 type QueryOptions<P, Q> = {
   pathVariable?: P;
@@ -212,7 +215,7 @@ const useAuthRepository = () => {
   );
 
   const postLogin = useMemo(
-    () => repository.createPost<LoginForm, MemberBasicProfile>("/login"),
+    () => repository.createPost<LoginForm, LoginResponse>("/login"),
     [repository]
   );
 

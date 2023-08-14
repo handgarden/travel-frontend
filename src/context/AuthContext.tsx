@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { ChildFC } from "../types/Basic.type";
 import useRepository from "../core/hook/useRepository";
 import { MemberBasicProfile } from "../types/User.type";
+import { JWT_KEY, LoginResponse } from "../types/Auth.type";
 
 type AuthStatus = "PENDING" | "DONE";
 
@@ -17,7 +18,7 @@ type AuthContextType = {
   status: AuthStatus;
   user: MemberBasicProfile | null;
   checkLogin: () => void;
-  login: (data: MemberBasicProfile, redirectURL: string) => void;
+  login: (data: LoginResponse, redirectURL: string) => void;
   logout: () => void;
   updateNickname: (newNickname: string) => void;
 };
@@ -38,11 +39,11 @@ export const AuthProvider: ChildFC = ({ children }) => {
 
   const navigate = useNavigate();
 
-  const jwt = localStorage.getItem("jwt");
-
   const { UserRepository } = useRepository();
 
   const checkLogin = useCallback(async () => {
+    const jwt = localStorage.getItem(JWT_KEY);
+
     if (!jwt) {
       setStatus("DONE");
       return;
@@ -55,15 +56,16 @@ export const AuthProvider: ChildFC = ({ children }) => {
     }
     setUser(memberDetailProfile);
     setStatus("DONE");
-  }, [UserRepository, jwt]);
+  }, [UserRepository]);
 
   useEffect(() => {
     checkLogin();
   }, [checkLogin]);
 
   const login = useCallback(
-    (data: MemberBasicProfile, redirectURL: string) => {
-      setUser(data);
+    (data: LoginResponse, redirectURL: string) => {
+      localStorage.setItem(JWT_KEY, data.accessToken);
+      setUser(data.profile);
       navigate(redirectURL);
     },
     [navigate]
