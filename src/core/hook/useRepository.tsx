@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import {
+  BASIC_SUCCESS_MESSAGE,
   PaginationQuery,
   PaginationResponse,
   ResponseTemplate,
@@ -220,12 +221,16 @@ const useAuthRepository = () => {
   );
 
   const postLogout = useMemo(
-    () => repository.createPost<void, "ok">("/logout", true),
+    () => repository.createPost<void, BASIC_SUCCESS_MESSAGE>("/logout", true),
     [repository]
   );
 
   const postRegister = useMemo(
-    () => repository.createPost<RegisterData, "ok">("/register", true),
+    () =>
+      repository.createPost<RegisterData, BASIC_SUCCESS_MESSAGE>(
+        "/register",
+        true
+      ),
     [repository]
   );
 
@@ -255,12 +260,18 @@ const useUserRepository = () => {
   );
 
   const postNickname = useMemo(
-    () => repository.createPost<UpdateNicknameForm, "ok">("/nickname"),
+    () =>
+      repository.createPost<UpdateNicknameForm, BASIC_SUCCESS_MESSAGE>(
+        "/nickname"
+      ),
     [repository]
   );
 
   const postPassword = useMemo(
-    () => repository.createPost<UpdatePasswordForm, "ok">("/password"),
+    () =>
+      repository.createPost<UpdatePasswordForm, BASIC_SUCCESS_MESSAGE>(
+        "/password"
+      ),
     [repository]
   );
 
@@ -349,12 +360,17 @@ const useDestinationRepository = () => {
   }, [repository]);
 
   const postDestination = useMemo(
-    () => repository.createPost<CreateDestinationForm, "ok">(""),
+    () =>
+      repository.createPost<CreateDestinationForm, BASIC_SUCCESS_MESSAGE>(""),
     [repository]
   );
 
   const updateDestination = useMemo(() => {
-    return repository.createPost<UpdateDestinationForm, "ok", string>("/{pv}");
+    return repository.createPost<
+      UpdateDestinationForm,
+      BASIC_SUCCESS_MESSAGE,
+      string
+    >("/{pv}");
   }, [repository]);
 
   const deleteDestination = useCallback(
@@ -362,7 +378,7 @@ const useDestinationRepository = () => {
       try {
         const response = await repository
           .getHttpClient()
-          .delete<void, AxiosResponse<ResponseTemplate<"ok">>>(
+          .delete<void, AxiosResponse<ResponseTemplate<BASIC_SUCCESS_MESSAGE>>>(
             `/destinations/${id}`,
             {
               headers: {
@@ -374,7 +390,7 @@ const useDestinationRepository = () => {
         checkAuthByResponse(data);
         return data;
       } catch (e) {
-        return serverErrorTemplateGenerator<"ok">();
+        return serverErrorTemplateGenerator<BASIC_SUCCESS_MESSAGE>();
       }
     },
     [checkAuthByResponse, repository]
@@ -441,7 +457,7 @@ const useDescriptionRepository = () => {
       try {
         const response = await repository
           .getHttpClient()
-          .delete<void, AxiosResponse<ResponseTemplate<"ok">>>(
+          .delete<void, AxiosResponse<ResponseTemplate<BASIC_SUCCESS_MESSAGE>>>(
             `/descriptions/${id}`,
             {
               headers: {
@@ -453,7 +469,7 @@ const useDescriptionRepository = () => {
         checkAuthByResponse(data);
         return data;
       } catch (e) {
-        return serverErrorTemplateGenerator<"ok">();
+        return serverErrorTemplateGenerator<BASIC_SUCCESS_MESSAGE>();
       }
     },
     [checkAuthByResponse, repository]
@@ -483,7 +499,7 @@ const useFileRepository = () => {
       try {
         const response = await repository
           .getHttpClient()
-          .delete<void, AxiosResponse<ResponseTemplate<"ok">>>(
+          .delete<void, AxiosResponse<ResponseTemplate<BASIC_SUCCESS_MESSAGE>>>(
             `/files/${storeFileName}`,
             {
               headers: {
@@ -495,7 +511,7 @@ const useFileRepository = () => {
         checkAuthByResponse(data);
         return data;
       } catch (e) {
-        return serverErrorTemplateGenerator<"ok">();
+        return serverErrorTemplateGenerator<BASIC_SUCCESS_MESSAGE>();
       }
     },
     [checkAuthByResponse, repository]
@@ -535,12 +551,15 @@ const useJourneyRepository = () => {
   }, [repository]);
 
   const postJourney = useMemo(
-    () => repository.createPost<JourneyForm, "ok">(""),
+    () => repository.createPost<JourneyForm, BASIC_SUCCESS_MESSAGE>(""),
     [repository]
   );
 
   const updateJourney = useMemo(
-    () => repository.createPost<JourneyForm, "ok", string>("/{pv}"),
+    () =>
+      repository.createPost<JourneyForm, BASIC_SUCCESS_MESSAGE, string>(
+        "/{pv}"
+      ),
     [repository]
   );
 
@@ -549,7 +568,7 @@ const useJourneyRepository = () => {
       try {
         const response = await repository
           .getHttpClient()
-          .delete<void, AxiosResponse<ResponseTemplate<"ok">>>(
+          .delete<void, AxiosResponse<ResponseTemplate<BASIC_SUCCESS_MESSAGE>>>(
             `/journeys/${id}`,
             {
               headers: {
@@ -561,7 +580,7 @@ const useJourneyRepository = () => {
         checkAuthByResponse(data);
         return data;
       } catch (e) {
-        return serverErrorTemplateGenerator<"ok">();
+        return serverErrorTemplateGenerator<BASIC_SUCCESS_MESSAGE>();
       }
     },
     [checkAuthByResponse, repository]
@@ -599,7 +618,7 @@ const useJourneyRepository = () => {
       try {
         const response = await repository
           .getHttpClient()
-          .delete<void, AxiosResponse<ResponseTemplate<"ok">>>(
+          .delete<void, AxiosResponse<ResponseTemplate<BASIC_SUCCESS_MESSAGE>>>(
             `/journeys/comments/${id}`,
             {
               headers: {
@@ -611,7 +630,7 @@ const useJourneyRepository = () => {
         checkAuthByResponse(data);
         return data;
       } catch (e) {
-        return serverErrorTemplateGenerator<"ok">();
+        return serverErrorTemplateGenerator<BASIC_SUCCESS_MESSAGE>();
       }
     },
     [checkAuthByResponse, repository]
@@ -674,19 +693,29 @@ const useAccommodationRepository = () => {
   }, [repository]);
 
   const createRoom = useMemo(() => {
-    return repository.createPost<CreateRoomForm, "ok", number>("/{pv}");
+    return repository.createPost<CreateRoomForm, BASIC_SUCCESS_MESSAGE, number>(
+      "/{pv}"
+    );
   }, [repository]);
 
   const reserveRoom = useMemo(() => {
-    return repository.createPost<ReserveRoomForm, "ok", number>("/rooms/{pv}");
+    return repository.createPost<
+      ReserveRoomForm,
+      BASIC_SUCCESS_MESSAGE,
+      number
+    >("/rooms/{pv}");
   }, [repository]);
 
   const confirmOrder = useMemo(() => {
-    return repository.createPost<void, "ok", number>("/orders/{pv}/confirm");
+    return repository.createPost<void, BASIC_SUCCESS_MESSAGE, number>(
+      "/orders/{pv}/confirm"
+    );
   }, [repository]);
 
   const cancelOrder = useMemo(() => {
-    return repository.createPost<void, "ok", number>("/orders/{pv}/cancel");
+    return repository.createPost<void, BASIC_SUCCESS_MESSAGE, number>(
+      "/orders/{pv}/cancel"
+    );
   }, [repository]);
 
   const getOrders = useMemo(() => {
@@ -746,7 +775,9 @@ const usePaymentRepository = () => {
   }, [repository]);
 
   const depositTravelPay = useMemo(() => {
-    return repository.createPost<DepositToTravelPayForm, "ok">("/deposit");
+    return repository.createPost<DepositToTravelPayForm, BASIC_SUCCESS_MESSAGE>(
+      "/deposit"
+    );
   }, [repository]);
 
   const createCreditCard = useMemo(() => {
@@ -758,7 +789,7 @@ const usePaymentRepository = () => {
       try {
         const response = await repository
           .getHttpClient()
-          .delete<void, AxiosResponse<ResponseTemplate<"ok">>>(
+          .delete<void, AxiosResponse<ResponseTemplate<BASIC_SUCCESS_MESSAGE>>>(
             `/payment/${id}`,
             {
               headers: {
@@ -770,7 +801,7 @@ const usePaymentRepository = () => {
         checkAuthByResponse(data);
         return data;
       } catch (e) {
-        return serverErrorTemplateGenerator<"ok">();
+        return serverErrorTemplateGenerator<BASIC_SUCCESS_MESSAGE>();
       }
     },
     [checkAuthByResponse, repository]

@@ -15,7 +15,6 @@ export type MemberBasicProfile = {
 
 export type UpdateNicknameForm = {
   nickname: string;
-  newNickname: string;
 };
 
 export type UpdatePasswordForm = {

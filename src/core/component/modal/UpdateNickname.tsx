@@ -3,7 +3,10 @@ import { useState } from "react";
 import { nicknameRules } from "../../../lib/validation/rule/validation.rule";
 import { validationMessages } from "../../../lib/validation/validation.message";
 import useModalState from "../../hook/useModalState";
-import { ResponseTemplate } from "../../../types/repository/basic.type";
+import {
+  BASIC_SUCCESS_MESSAGE,
+  ResponseTemplate,
+} from "../../../types/repository/basic.type";
 import {
   MemberBasicProfile,
   UpdateNicknameForm,
@@ -11,7 +14,9 @@ import {
 
 type Props = {
   userData: MemberBasicProfile;
-  postNickname: (data: UpdateNicknameForm) => Promise<ResponseTemplate<"ok">>;
+  postNickname: (
+    data: UpdateNicknameForm
+  ) => Promise<ResponseTemplate<BASIC_SUCCESS_MESSAGE>>;
   updateNickname: (newNickname: string) => void;
 };
 
@@ -40,8 +45,7 @@ const UpdateNickname: React.FC<Props> = ({
         return;
       }
       const data: UpdateNicknameForm = {
-        ...formData,
-        nickname: userData.nickname,
+        nickname: formData.newNickname,
       };
       const response = await postNickname(data);
 
@@ -60,8 +64,8 @@ const UpdateNickname: React.FC<Props> = ({
       }
 
       window.alert("닉네임을 성공적으로 변경했습니다.");
-      updateNickname(data.newNickname);
-      form.setFieldValue("prevNickname", data.newNickname);
+      updateNickname(formData.newNickname);
+      form.setFieldValue("prevNickname", formData.newNickname);
       form.setFieldValue("newNickname", "");
 
       setIsModalOpen(false);

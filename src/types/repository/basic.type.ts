@@ -26,3 +26,5 @@ export type PaginationQuery = {
   page: number;
   size: number;
 };
+
+export type BASIC_SUCCESS_MESSAGE = "success";
