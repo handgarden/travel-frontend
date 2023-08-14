@@ -8,9 +8,13 @@ const useRedirectPath = () => {
 
   const query = useQueryString();
 
+  let qs = QueryString.stringify(query);
+
+  qs = qs ? "?" + qs : qs;
+
   const redirectPath = useMemo(
-    () => "?redirect=" + location.pathname + `?${QueryString.stringify(query)}`,
-    [location.pathname, query]
+    () => "?redirect=" + location.pathname + qs,
+    [location.pathname, qs]
   );
 
   return redirectPath;

@@ -53,10 +53,8 @@ export const destinationPath = (function () {
 })();
 
 export const authPath = (function () {
-  const defaultPath = "/login";
-
   return {
-    LOGIN: defaultPath,
-    REGISTER: defaultPath + "/register",
+    LOGIN: "/login",
+    REGISTER: "/register",
   };
 })();
