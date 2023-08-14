@@ -220,10 +220,11 @@ const useAuthRepository = () => {
     [repository]
   );
 
-  const postLogout = useMemo(
-    () => repository.createPost<void, BASIC_SUCCESS_MESSAGE>("/logout", true),
-    [repository]
-  );
+  const postLogout = useMemo(() => {
+    return () => {
+      return Promise.resolve(localStorage.removeItem(JWT_KEY));
+    };
+  }, []);
 
   const postRegister = useMemo(
     () =>
