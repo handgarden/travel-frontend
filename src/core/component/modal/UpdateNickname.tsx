@@ -57,10 +57,12 @@ const UpdateNickname: React.FC<Props> = ({
         const error = response.error;
         if (error && error.message) {
           const message = error.message;
+          //중복
           if (message.includes("duplicate")) {
             setGlobalError(DUPLICATE_MESSAGE("닉네임"));
           } else {
-            setGlobalError(SERVER_ERROR_MESSAGE);
+            //검증
+            setGlobalError("닉네임 생성 규칙을 지켜주세요.");
           }
         } else {
           setGlobalError(SERVER_ERROR_MESSAGE);
