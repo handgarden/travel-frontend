@@ -18,6 +18,6 @@ export type UpdateNicknameForm = {
 };
 
 export type UpdatePasswordForm = {
-  prevRawPassword: string;
-  newRawPassword: string;
+  prevPassword: string;
+  newPassword: string;
 };

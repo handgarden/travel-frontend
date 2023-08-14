@@ -9,6 +9,11 @@ import { ValidationStatus } from "../../../types/form/validation.type";
 import { useNavigate } from "react-router-dom";
 import useRepository from "../../hook/useRepository";
 import { UpdatePasswordForm } from "../../../types/User.type";
+import {
+  SERVER_ERROR_MESSAGE,
+  VALIDATION_MESSAGE,
+  WRONG_MESSAGE,
+} from "../../../lib/func/message";
 
 type FormData = {
   prevPassword: string;
@@ -72,24 +77,26 @@ const UpdatePassword: React.FC<Props> = ({ logout }) => {
         return;
       }
       const requestData: UpdatePasswordForm = {
-        prevRawPassword: data.prevPassword,
-        newRawPassword: data.newPassword,
+        prevPassword: data.prevPassword,
+        newPassword: data.newPassword,
       };
       const response = await UserRepository.postPassword(requestData);
       if (!response.success) {
         const error = response.error;
-        //form 문제인 경우
-        if (error && error.message) {
-          setGlobalError(error.message);
+
+        if (!error || error.status !== 400) {
+          setGlobalError(SERVER_ERROR_MESSAGE);
           return;
         }
-        if (error && error.bindingErrors.length > 0) {
-          const bindingError = error.bindingErrors[0];
-          setGlobalError(bindingError.defaultMessage);
+
+        const message = error.message;
+
+        if (message.includes("newPassword")) {
+          setGlobalError(VALIDATION_MESSAGE("새 비밀번호를"));
           return;
         }
-        //form 문제가 아닌 경우
-        setGlobalError("서버에 문제가 있습니다.");
+
+        setGlobalError(WRONG_MESSAGE("현재 비밀번호를"));
         return;
       }
       //변경 성공
