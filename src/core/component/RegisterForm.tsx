@@ -82,7 +82,8 @@ const RegisterForm: React.FC<Props> = ({ itemSize }) => {
       setLoading(false);
       if (response.success) {
         window.alert("회원 가입 성공.");
-        let path = query.redirect ? query.redirect.toString() : "/login";
+        let path = "/login";
+        path += query.redirect ? query.redirect.toString() : "";
         navigate(path);
         return;
       }
