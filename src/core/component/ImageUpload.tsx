@@ -10,6 +10,7 @@ import {
 } from "../../types/repository/basic.type";
 import { useNavigate } from "react-router-dom";
 import useRedirectPath from "../hook/useRedirectPath";
+import { JWT_KEY } from "../../types/Auth.type";
 
 export interface MyUploadChangeParam {
   file: MyUploadFile;
@@ -101,6 +102,7 @@ const ImageUpload: React.FC<Props> = ({
       <Upload
         action={`${process.env.REACT_APP_API_HOST}/files`}
         withCredentials
+        headers={{ authorization: `bearer ${localStorage.getItem(JWT_KEY)}` }}
         accept=".jpg, .jpeg, .png"
         listType="picture-card"
         fileList={fileList}
