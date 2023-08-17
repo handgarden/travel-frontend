@@ -648,7 +648,10 @@ const Elem: React.FC<ElemProps> = ({ data }) => {
 
   return (
     <>
-      <Card title={<BasicProfile user={data.creator} />} extra={extraBtn}>
+      <Card
+        title={<BasicProfile userNickname={data.creator.nickname} />}
+        extra={extraBtn}
+      >
         <Typography.Title level={4} style={{ textAlign: "center" }}>
           {`제목: ${data.title}`}
         </Typography.Title>
@@ -1012,7 +1015,7 @@ const CommentElem: React.FC<CommentElemProps> = ({
     <Card
       title={
         <Space>
-          <BasicProfile user={data.creator} />
+          <BasicProfile userNickname={data.creator.nickname} />
           <Typography.Paragraph style={{ margin: 0 }}>
             {`- ${new Date(data.updatedAt).toLocaleString("ko-kr")}`}
           </Typography.Paragraph>
@@ -1076,7 +1079,7 @@ const EditComment: React.FC<EditCommentProps> = ({
     <Card
       title={
         <Space>
-          <BasicProfile user={data.creator} />
+          <BasicProfile userNickname={data.creator.nickname} />
           <Typography.Paragraph style={{ margin: 0 }}>
             {`- ${new Date(data.updatedAt).toLocaleString("ko-kr")}`}
           </Typography.Paragraph>

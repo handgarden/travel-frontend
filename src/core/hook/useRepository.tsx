@@ -405,12 +405,6 @@ const useDestinationRepository = () => {
     >("/{pv}/descriptions");
   }, [repository]);
 
-  const postDescription = useMemo(() => {
-    return repository.createPost<DescriptionForm, DescriptionType, string>(
-      "/{pv}/descriptions"
-    );
-  }, [repository]);
-
   const repo = useMemo(
     () => ({
       postDestination,
@@ -420,7 +414,6 @@ const useDestinationRepository = () => {
       getDestinationThumnails,
       getDestinations,
       getDescriptions,
-      postDescription,
     }),
     [
       postDestination,
@@ -430,7 +423,6 @@ const useDestinationRepository = () => {
       getDestinationThumnails,
       getDestinations,
       getDescriptions,
-      postDescription,
     ]
   );
 
@@ -444,6 +436,10 @@ const useDescriptionRepository = () => {
     () => new Repository("/descriptions", checkAuthByResponse),
     [checkAuthByResponse]
   );
+
+  const postDescription = useMemo(() => {
+    return repository.createPost<DescriptionForm, DescriptionType>("");
+  }, [repository]);
 
   const updateDescription = useMemo(() => {
     return repository.createPost<
@@ -478,10 +474,11 @@ const useDescriptionRepository = () => {
 
   const repo = useMemo(
     () => ({
+      postDescription,
       updateDescription,
       deleteDescription,
     }),
-    [deleteDescription, updateDescription]
+    [deleteDescription, postDescription, updateDescription]
   );
 
   return repo;
@@ -505,6 +502,7 @@ const useFileRepository = () => {
             {
               headers: {
                 authorization: `bearer ${localStorage.getItem(JWT_KEY)}`,
+                withCredentials: true,
               },
             }
           );

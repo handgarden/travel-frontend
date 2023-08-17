@@ -1,6 +1,5 @@
 import { CategoryType } from "../lib/const/category";
 import { StoreFileName } from "./File.type";
-import { MemberBasicProfile } from "./User.type";
 import { PaginationQuery } from "./repository/basic.type";
 
 export type DescriptionForm = {
@@ -22,7 +21,7 @@ export type DescriptionUpdateForm = {
 
 export type DescriptionType = {
   id: number;
-  creator: MemberBasicProfile;
+  creatorNickname: string;
   content: string;
   images: StoreFileName[];
   createdAt: string;

@@ -68,7 +68,7 @@ const Add: React.FC<AddDescriptionProps> = ({
 
   const { setGlobalError, GlobalErrorItem } = useGlobalError();
 
-  const { DestinationRepository } = useRepository();
+  const { DescriptionRepository } = useRepository();
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -104,10 +104,7 @@ const Add: React.FC<AddDescriptionProps> = ({
         storeFileNames,
       };
       setLoading(true);
-      const response = await DestinationRepository.postDescription(
-        requestData,
-        { pathVariable: destinationId.toString() }
-      );
+      const response = await DescriptionRepository.postDescription(requestData);
       setLoading(false);
       if (!response.success) {
         if (response.error && response.error.status === 401) {
@@ -208,7 +205,7 @@ const Edit: React.FC<EditProps> = ({ data, cancle, updateDescription }) => {
     });
     setFileList(files);
     form.setFieldValue("content", data.content);
-  }, [data.creator, data.content, data.images, form]);
+  }, [data.content, data.images, form]);
 
   const { setGlobalError, GlobalErrorItem } = useGlobalError();
 
@@ -275,7 +272,7 @@ const Edit: React.FC<EditProps> = ({ data, cancle, updateDescription }) => {
     <Card
       key={data.id.toString()}
       type="inner"
-      title={<BasicProfile user={data.creator} />}
+      title={<BasicProfile userNickname={data.creatorNickname} />}
     >
       <Form form={form} layout="vertical" validateMessages={validationMessages}>
         <ImageUpload fileList={fileList} setFileList={setFileList} fakeDelete />
@@ -355,7 +352,7 @@ const Elem: React.FC<ElemProps> = ({
 }) => {
   const [edit, setEdit] = useState<boolean>(false);
 
-  const isOwner = useAuthorization(data.creator.nickname);
+  const isOwner = useAuthorization(data.creatorNickname);
 
   const extraButton = useMemo(() => {
     if (hideExtra) {
@@ -396,7 +393,7 @@ const Elem: React.FC<ElemProps> = ({
       type="inner"
       title={
         <Space>
-          <BasicProfile user={data.creator} />
+          <BasicProfile userNickname={data.creatorNickname} />
           <Divider type="vertical" />
           <Typography.Paragraph style={{ margin: 0 }}>
             {new Date(data.updatedAt).toLocaleString("ko-KR").toString()}

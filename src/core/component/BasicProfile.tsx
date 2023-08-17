@@ -1,20 +1,19 @@
 import { Avatar, Space, Typography } from "antd";
-import { MemberBasicProfile } from "../../types/User.type";
 
 type Props = {
-  user: MemberBasicProfile;
+  userNickname: string;
 };
 
-const BasicProfile: React.FC<Props> = ({ user }) => {
+const BasicProfile: React.FC<Props> = ({ userNickname }) => {
   return (
     <Space>
       <Avatar
         style={{ backgroundColor: "#00a2ae", verticalAlign: "middle" }}
         size="small"
       >
-        {user.nickname}
+        {userNickname}
       </Avatar>
-      <Typography.Text>{user.nickname}</Typography.Text>
+      <Typography.Text>{userNickname}</Typography.Text>
     </Space>
   );
 };
