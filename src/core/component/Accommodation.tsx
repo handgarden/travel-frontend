@@ -119,7 +119,7 @@ const Detail: React.FC<DetailProps> = ({ dataId }) => {
 
   const [edit, setEdit] = useState<boolean>(false);
 
-  const hasOwn = useAuthorization(destination?.creator);
+  const hasOwn = useAuthorization(destination?.creatorNickname);
 
   const extra = useMemo(() => {
     if (!destination || !hasOwn) {
@@ -163,13 +163,13 @@ const Detail: React.FC<DetailProps> = ({ dataId }) => {
           <Typography.Paragraph>{`주소: ${
             destination ? destination.address : ""
           }`}</Typography.Paragraph>
-          {destination ? (
+          {/* {destination ? (
             <Destination.ElementImages
               id={destination.id}
               images={destination.images}
               setImages={setImages}
             />
-          ) : null}
+          ) : null} */}
         </Space>
         <Divider />
         <Room.List dataId={dataId} isOwner={hasOwn} />

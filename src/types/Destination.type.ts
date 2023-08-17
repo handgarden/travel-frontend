@@ -29,15 +29,13 @@ export type DestinationInfoType = DestinationInfo & {
 };
 
 export type DestinationResponse = DestinationInfoResponse & {
-  images: PaginationResponse<string>;
   createdAt: string;
   updatedAt: string;
-  creator: MemberBasicProfile;
+  creatorNickname: string;
 };
 
 export type DestinationType = DestinationInfoType & {
-  images: PaginationResponse<string>;
   createdAt: string;
   updatedAt: string;
-  creator: MemberBasicProfile;
+  creatorNickname: string;
 };

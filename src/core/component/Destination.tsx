@@ -402,11 +402,11 @@ const Element: React.FC<ElementProps> = ({ initData, deleteData }) => {
       <Card type="inner" title={title} key={data.id.toString()}>
         <Space direction="vertical" style={{ width: "100%" }}>
           <Typography.Paragraph>{`주소: ${data.address}`}</Typography.Paragraph>
-          <ElementImages
+          {/* <ElementImages
             id={data.id}
             images={data.images}
             setImages={setImage}
-          />
+          /> */}
         </Space>
       </Card>
     </>
@@ -454,6 +454,7 @@ const DestinationList: React.FC<ListProps> = ({ category, forUser }) => {
       const data = paginationResponse.data.map((d) =>
         convertObjectIncludeCategory(d)
       );
+      console.log(data);
       setData(data);
       setTotal(paginationResponse.total);
     },
@@ -687,7 +688,7 @@ const DestinationDetail: React.FC<DetailProps> = ({ dataId }) => {
 
   const [edit, setEdit] = useState<boolean>(false);
 
-  const hasOwn = useAuthorization(destination?.creator);
+  const hasOwn = useAuthorization(destination?.creatorNickname);
 
   const extra = useMemo(() => {
     if (!destination || !hasOwn) {
@@ -731,13 +732,13 @@ const DestinationDetail: React.FC<DetailProps> = ({ dataId }) => {
           <Typography.Paragraph>{`주소: ${
             destination ? destination.address : ""
           }`}</Typography.Paragraph>
-          {destination ? (
+          {/* {destination ? (
             <ElementImages
               id={destination.id}
               images={destination.images}
               setImages={setImages}
             />
-          ) : null}
+          ) : null} */}
         </Space>
         <Divider />
         <Description.List

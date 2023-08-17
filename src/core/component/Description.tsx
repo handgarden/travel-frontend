@@ -355,7 +355,7 @@ const Elem: React.FC<ElemProps> = ({
 }) => {
   const [edit, setEdit] = useState<boolean>(false);
 
-  const isOwner = useAuthorization(data.creator);
+  const isOwner = useAuthorization(data.creator.nickname);
 
   const extraButton = useMemo(() => {
     if (hideExtra) {

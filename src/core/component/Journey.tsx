@@ -625,7 +625,7 @@ const Elem: React.FC<ElemProps> = ({ data }) => {
     }
   }, [JourneyRepository, data.id, navigate, redirectPath]);
 
-  const isOwner = useAuthorization(data.creator);
+  const isOwner = useAuthorization(data.creator.nickname);
 
   const extraBtn = useMemo(() => {
     if (!isOwner) {
@@ -975,7 +975,7 @@ const CommentElem: React.FC<CommentElemProps> = ({
 
   const [editStatus, setEditStatus] = useState<boolean>(false);
 
-  const isOwner = useAuthorization(data.creator);
+  const isOwner = useAuthorization(data.creator.nickname);
 
   const extra = useMemo(() => {
     if (!isOwner) {
