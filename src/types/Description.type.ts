@@ -1,4 +1,3 @@
-import { CategoryType } from "../lib/const/category";
 import { StoreFileName } from "./File.type";
 import { PaginationQuery } from "./repository/basic.type";
 
@@ -28,7 +27,6 @@ export type DescriptionType = {
   updatedAt: string;
 };
 
-export type ItemListQuery = PaginationQuery & {
-  categories?: CategoryType[];
-  query?: string;
+export type DescriptionQuery = PaginationQuery & {
+  destination: number;
 };

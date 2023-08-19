@@ -40,9 +40,10 @@ import {
   UpdateDestinationForm,
   DestinationType,
   DestinationResponse,
+  ItemListQuery,
 } from "../../types/Destination.type";
 import useAuthorization from "../hook/useAuthorization";
-import { ItemListQuery, DescriptionType } from "../../types/Description.type";
+import { DescriptionType } from "../../types/Description.type";
 import Description from "./Description";
 import { StoreFileName } from "../../types/File.type";
 
@@ -299,15 +300,13 @@ const UpdateForm: React.FC<UpdateProps> = ({ data, cancle }) => {
 
 type ElementImagesProps = {
   id: number;
-  images: PaginationResponse<StoreFileName>;
-  setImages: (images: PaginationResponse<StoreFileName>) => void;
 };
 
-const ElementImages: React.FC<ElementImagesProps> = ({
-  id,
-  images,
-  setImages,
-}) => {
+const ElementImages: React.FC<ElementImagesProps> = ({ id }) => {
+  const [images, setImages] = useState<StoreFileName[]>([]);
+
+  const [total, setTotal] = useState<number>(0);
+
   const { DestinationRepository } = useRepository();
 
   const getData = useCallback(
@@ -318,11 +317,16 @@ const ElementImages: React.FC<ElementImagesProps> = ({
       });
       if (data.success) {
         const pgData = data.response as PaginationResponse<StoreFileName>;
-        setImages(pgData);
+        setTotal(pgData.total);
+        setImages(pgData.data);
       }
     },
     [DestinationRepository, id, setImages]
   );
+
+  useEffect(() => {
+    getData({ page: 1, size: 10 });
+  }, [getData]);
 
   const [pagination, setPagination] = useState<PaginationQuery>({
     page: 1,
@@ -341,7 +345,7 @@ const ElementImages: React.FC<ElementImagesProps> = ({
   return (
     <Space direction="vertical" style={{ width: "100%" }}>
       <Space style={{ width: "100%", flexWrap: "wrap" }}>
-        {images.data.map((d) => (
+        {images.map((d) => (
           <Image
             key={d}
             src={`${process.env.REACT_APP_IMAGE_BASE_URL}/${d}`}
@@ -353,29 +357,20 @@ const ElementImages: React.FC<ElementImagesProps> = ({
         onChange={handlePageChange}
         current={pagination.page}
         pageSize={pagination.size}
-        total={images.total}
+        total={total}
         style={{ display: "flex", justifyContent: "center" }}
-        showSizeChanger={images.data.length > 0}
+        showSizeChanger={images.length > 0}
       />
     </Space>
   );
 };
 
 type ElementProps = {
-  initData: DestinationType;
+  data: DestinationType;
   deleteData: (id: number) => void;
 };
 
-const Element: React.FC<ElementProps> = ({ initData, deleteData }) => {
-  const [data, setData] = useState<DestinationType>(initData);
-
-  const setImage = (images: PaginationResponse<StoreFileName>) => {
-    setData((prev) => ({
-      ...prev,
-      images: images,
-    }));
-  };
-
+const Element: React.FC<ElementProps> = ({ data, deleteData }) => {
   const title = useMemo(() => {
     const color = getCategoryColor(data.category);
     return (
@@ -402,11 +397,7 @@ const Element: React.FC<ElementProps> = ({ initData, deleteData }) => {
       <Card type="inner" title={title} key={data.id.toString()}>
         <Space direction="vertical" style={{ width: "100%" }}>
           <Typography.Paragraph>{`주소: ${data.address}`}</Typography.Paragraph>
-          {/* <ElementImages
-            id={data.id}
-            images={data.images}
-            setImages={setImage}
-          /> */}
+          <ElementImages id={data.id} />
         </Space>
       </Card>
     </>
@@ -424,7 +415,7 @@ type ListProps = {
 };
 
 type QueryForm = {
-  categories: CategoryType[];
+  category: CategoryType[];
   query: string;
 };
 
@@ -475,7 +466,7 @@ const DestinationList: React.FC<ListProps> = ({ category, forUser }) => {
   const [form] = useForm<QueryForm>();
 
   useEffect(() => {
-    form.setFieldValue("categories", category ? [category] : []);
+    form.setFieldValue("category", category ? [category] : []);
     form.setFieldValue("query", "");
     const initPage: PaginationQuery = {
       page: 1,
@@ -484,12 +475,12 @@ const DestinationList: React.FC<ListProps> = ({ category, forUser }) => {
     setPagination(initPage);
     getData({
       ...initPage,
-      categories: category ? [category] : [],
+      category: category ? [category] : [],
     });
   }, [category, form, getData]);
 
   const optionChange = (checkedValues: CheckboxValueType[]) => {
-    form.setFieldValue("categories", checkedValues);
+    form.setFieldValue("category", checkedValues);
   };
 
   const submit = () => {
@@ -500,7 +491,7 @@ const DestinationList: React.FC<ListProps> = ({ category, forUser }) => {
     setPagination(initPage);
     getData({
       ...initPage,
-      categories: form.getFieldValue("categories"),
+      category: form.getFieldValue("category"),
       query: form.getFieldValue("query"),
     });
   };
@@ -513,7 +504,7 @@ const DestinationList: React.FC<ListProps> = ({ category, forUser }) => {
     setPagination(newPage);
     getData({
       ...newPage,
-      categories: form.getFieldValue("categories"),
+      category: form.getFieldValue("category"),
       query: form.getFieldValue("query"),
     });
   };
@@ -568,7 +559,7 @@ const DestinationList: React.FC<ListProps> = ({ category, forUser }) => {
       <Space direction="vertical" style={{ display: "flex" }} size="middle">
         {data.map((data) => (
           <Element
-            initData={data}
+            data={data}
             key={data.id.toString()}
             deleteData={deleteData}
           />
@@ -617,18 +608,6 @@ const DestinationDetail: React.FC<DetailProps> = ({ dataId }) => {
   useEffect(() => {
     getDestination();
   }, [getDestination]);
-
-  const setImages = (images: PaginationResponse<string>) => {
-    setDestination((prev) => {
-      if (!prev) {
-        return prev;
-      }
-      return {
-        ...prev,
-        images: images,
-      };
-    });
-  };
 
   const title = useMemo(() => {
     if (!destination) {
@@ -732,13 +711,7 @@ const DestinationDetail: React.FC<DetailProps> = ({ dataId }) => {
           <Typography.Paragraph>{`주소: ${
             destination ? destination.address : ""
           }`}</Typography.Paragraph>
-          {/* {destination ? (
-            <ElementImages
-              id={destination.id}
-              images={destination.images}
-              setImages={setImages}
-            />
-          ) : null} */}
+          {destination ? <ElementImages id={destination.id} /> : null}
         </Space>
         <Divider />
         <Description.List

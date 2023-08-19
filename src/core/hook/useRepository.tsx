@@ -22,12 +22,13 @@ import {
   CreateDestinationForm,
   UpdateDestinationForm,
   DestinationResponse,
+  ItemListQuery,
 } from "../../types/Destination.type";
 import {
   DescriptionType,
   DescriptionForm,
   DescriptionUpdateForm,
-  ItemListQuery,
+  DescriptionQuery,
 } from "../../types/Description.type";
 import { StoreFileName } from "../../types/File.type";
 import {
@@ -352,7 +353,7 @@ const useDestinationRepository = () => {
     return repository.createGet<DestinationResponse, string>("/{pv}", true);
   }, [repository]);
 
-  const getDestinationThumnails = useMemo(() => {
+  const getDestinationThumbnails = useMemo(() => {
     return repository.createGet<
       PaginationResponse<StoreFileName>,
       string,
@@ -397,32 +398,22 @@ const useDestinationRepository = () => {
     [checkAuthByResponse, repository]
   );
 
-  const getDescriptions = useMemo(() => {
-    return repository.createGet<
-      PaginationResponse<DescriptionType>,
-      string,
-      PaginationQuery
-    >("/{pv}/descriptions");
-  }, [repository]);
-
   const repo = useMemo(
     () => ({
       postDestination,
       updateDestination,
       deleteDestination,
       getDestination,
-      getDestinationThumnails,
+      getDestinationThumnails: getDestinationThumbnails,
       getDestinations,
-      getDescriptions,
     }),
     [
       postDestination,
       updateDestination,
       deleteDestination,
       getDestination,
-      getDestinationThumnails,
+      getDestinationThumbnails,
       getDestinations,
-      getDescriptions,
     ]
   );
 
@@ -439,6 +430,14 @@ const useDescriptionRepository = () => {
 
   const postDescription = useMemo(() => {
     return repository.createPost<DescriptionForm, DescriptionType>("");
+  }, [repository]);
+
+  const getDescriptions = useMemo(() => {
+    return repository.createGet<
+      PaginationResponse<DescriptionType>,
+      void,
+      DescriptionQuery
+    >("");
   }, [repository]);
 
   const updateDescription = useMemo(() => {
@@ -475,10 +474,11 @@ const useDescriptionRepository = () => {
   const repo = useMemo(
     () => ({
       postDescription,
+      getDescriptions,
       updateDescription,
       deleteDescription,
     }),
-    [deleteDescription, postDescription, updateDescription]
+    [deleteDescription, getDescriptions, postDescription, updateDescription]
   );
 
   return repo;

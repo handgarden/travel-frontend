@@ -471,13 +471,15 @@ const List: React.FC<ListProps> = ({
     };
   };
 
-  const { DestinationRepository } = useRepository();
+  const { DescriptionRepository } = useRepository();
 
   const getDescriptions = useCallback(
     async (paginationQuery: PaginationQuery) => {
-      const response = await DestinationRepository.getDescriptions({
-        pathVariable: destinationId.toString(),
-        query: paginationQuery,
+      const response = await DescriptionRepository.getDescriptions({
+        query: {
+          destination: destinationId,
+          ...paginationQuery,
+        },
       });
       if (!response.success) {
         window.alert("후기를 가져오는데 실패했습니다.");
@@ -492,7 +494,7 @@ const List: React.FC<ListProps> = ({
       setDescriptions(paginationResponse.data);
       setTotal(paginationResponse.total);
     },
-    [DestinationRepository, destinationId, setDescriptions]
+    [DescriptionRepository, destinationId, setDescriptions]
   );
 
   useEffect(() => {
