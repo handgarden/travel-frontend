@@ -978,7 +978,7 @@ const CommentElem: React.FC<CommentElemProps> = ({
 
   const [editStatus, setEditStatus] = useState<boolean>(false);
 
-  const isOwner = useAuthorization(data.creator.nickname);
+  const isOwner = useAuthorization(data.creatorNickname);
 
   const extra = useMemo(() => {
     if (!isOwner) {
@@ -1015,7 +1015,7 @@ const CommentElem: React.FC<CommentElemProps> = ({
     <Card
       title={
         <Space>
-          <BasicProfile userNickname={data.creator.nickname} />
+          <BasicProfile userNickname={data.creatorNickname} />
           <Typography.Paragraph style={{ margin: 0 }}>
             {`- ${new Date(data.updatedAt).toLocaleString("ko-kr")}`}
           </Typography.Paragraph>
@@ -1079,7 +1079,7 @@ const EditComment: React.FC<EditCommentProps> = ({
     <Card
       title={
         <Space>
-          <BasicProfile userNickname={data.creator.nickname} />
+          <BasicProfile userNickname={data.creatorNickname} />
           <Typography.Paragraph style={{ margin: 0 }}>
             {`- ${new Date(data.updatedAt).toLocaleString("ko-kr")}`}
           </Typography.Paragraph>

@@ -4,7 +4,6 @@ import {
   DestinationInfoResponse,
   DestinationInfoType,
 } from "./Destination.type";
-import { MemberBasicProfile } from "./User.type";
 
 export const jouryneyContentResponseConverter = (
   j: JourneyContentResponse
@@ -64,7 +63,7 @@ export type JourneyCommentUpdateForm = {
 
 export type JourneyCommentType = {
   id: number;
-  creator: MemberBasicProfile;
+  creatorNickname: string;
   content: string;
   createdAt: string;
   updatedAt: string;
