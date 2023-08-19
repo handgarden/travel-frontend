@@ -39,9 +39,9 @@ export type JourneyForm = {
 
 type JourneyBase = {
   id: number;
-  creator: MemberBasicProfile;
+  creatorNickname: string;
   title: string;
-  content: string;
+  review: string;
   createdAt: string;
   updatedAt: string;
 };

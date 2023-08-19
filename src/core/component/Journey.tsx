@@ -435,7 +435,7 @@ const Edit: React.FC = () => {
       return;
     }
     const data = response.response as JourneyResponse;
-    if (data.creator.nickname !== user.nickname) {
+    if (data.creatorNickname !== user.nickname) {
       window.alert("권한이 없습니다.");
       navigate("../");
       return;
@@ -444,7 +444,7 @@ const Edit: React.FC = () => {
       data.journeyContents.map((d) => jouryneyContentResponseConverter(d))
     );
     form.setFieldValue("title", data.title);
-    form.setFieldValue("review", data.content);
+    form.setFieldValue("review", data.review);
   }, [JourneyRepository, form, navigate, pathVariable.id, redirectPath, user]);
 
   useEffect(() => {
@@ -625,7 +625,7 @@ const Elem: React.FC<ElemProps> = ({ data }) => {
     }
   }, [JourneyRepository, data.id, navigate, redirectPath]);
 
-  const isOwner = useAuthorization(data.creator.nickname);
+  const isOwner = useAuthorization(data.creatorNickname);
 
   const extraBtn = useMemo(() => {
     if (!isOwner) {
@@ -649,7 +649,7 @@ const Elem: React.FC<ElemProps> = ({ data }) => {
   return (
     <>
       <Card
-        title={<BasicProfile userNickname={data.creator.nickname} />}
+        title={<BasicProfile userNickname={data.creatorNickname} />}
         extra={extraBtn}
       >
         <Typography.Title level={4} style={{ textAlign: "center" }}>
@@ -693,7 +693,7 @@ const Elem: React.FC<ElemProps> = ({ data }) => {
             </Collapse.Panel>
           ))}
         </Collapse>
-        <TextContent data={data.content} />
+        <TextContent data={data.review} />
         <Divider />
         <Collapse>
           <Collapse.Panel header="댓글" key="댓글">
