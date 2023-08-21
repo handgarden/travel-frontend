@@ -52,7 +52,6 @@ export const LoginForm: React.FC<Props> = ({ itemSize }) => {
     }
 
     const errorData = userData.error;
-    console.log(errorData);
     if (errorData && errorData.status === 400) {
       setGlobalError("가입되지 않은 회원이거나 잘못된 암호를 입력하셨습니다.");
       return;
