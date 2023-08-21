@@ -1,5 +1,3 @@
-import { MemberBasicProfile } from "./User.type";
-
 type ORDER_STATUS_CREATED = "CREATED";
 type ORDER_STATUS_CANCELLED = "CANCELLED";
 type ORDER_STATUS_CONFIRMED = "CONFIRMED";
@@ -20,7 +18,7 @@ export type RoomOrderType = {
   totalPrice: number;
   startDate: string;
   endDate: string;
-  member: MemberBasicProfile;
+  consumerNickname: string;
   status: OrderStatusType;
   createdAt: string;
   updatedAt: string;

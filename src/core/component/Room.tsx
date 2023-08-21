@@ -231,7 +231,11 @@ const List: React.FC<ListProps> = ({ dataId, isOwner }) => {
         </Button>
       </Space>
       {GlobalErrorItem}
-      <RoomTable data={rooms} start={startDate} end={endDate} />
+      <RoomTable
+        data={globalError.length < 1 ? rooms : []}
+        start={startDate}
+        end={endDate}
+      />
       <Divider />
     </>
   );
@@ -271,12 +275,11 @@ const Add: React.FC<AddProps> = ({ dataId, isOwner }) => {
       setGlobalError("");
       const requestData: CreateRoomForm = {
         ...data,
+        destinationId: dataId,
         inTime: data.inTime.format("HH:mm"),
       };
       setLoading(true);
-      const response = await AccommodationRepository.createRoom(requestData, {
-        pathVariable: dataId,
-      });
+      const response = await AccommodationRepository.createRoom(requestData);
       setLoading(false);
       if (!response.success) {
         if (response.error) {
@@ -477,10 +480,10 @@ const Reserve: React.FC<ReserveProps> = ({ roomId }) => {
         <Typography.Paragraph>
           <Typography.Text>숙소 : </Typography.Text>
           <Link
-            to={`${destinationPath.ACCOMMODATION}/${room.accommodationId}`}
+            to={`${destinationPath.ACCOMMODATION}/${room.destinationId}`}
             target="_blank"
           >
-            {room.accommodationName}
+            {room.destinationName}
           </Link>
         </Typography.Paragraph>
         <Typography.Paragraph>{`이름: ${room.name}`}</Typography.Paragraph>
@@ -521,7 +524,7 @@ const Reserve: React.FC<ReserveProps> = ({ roomId }) => {
 type RoomSalesType = {
   // id: number;
   // accommodationId: number;
-  accommodationName: React.ReactNode;
+  destinationName: React.ReactNode;
   name: string;
   price: number;
   inTime: string;
@@ -532,8 +535,8 @@ const SalesList = () => {
   const columns: ColumnsType<RoomSalesType> = [
     {
       title: "숙소 이름",
-      dataIndex: "accommodationName",
-      key: "accommodationName",
+      dataIndex: "destinationName",
+      key: "destinationName",
     },
     {
       title: "방 이름",
@@ -579,10 +582,10 @@ const SalesList = () => {
         const source = data.data.map((d) => {
           const accommodationName = (
             <Link
-              to={`${destinationPath.ACCOMMODATION}/${d.accommodationId}`}
+              to={`${destinationPath.ACCOMMODATION}/${d.destinationId}`}
               target="_blank"
             >
-              {d.accommodationName}
+              {d.destinationName}
             </Link>
           );
           const orders = <Link to={`${userPath.SALES}/${d.id}`}>보기</Link>;

@@ -164,7 +164,7 @@ const Elem: React.FC<ElemProps> = ({
           "YYYY-MM-DD hh:mm a"
         )}`}</Typography.Paragraph>
         {showConsumer ? (
-          <Typography.Paragraph>{`예약자: ${data.member.nickname}`}</Typography.Paragraph>
+          <Typography.Paragraph>{`예약자: ${data.consumerNickname}`}</Typography.Paragraph>
         ) : null}
         <Typography.Paragraph>
           <Typography.Text>숙소: </Typography.Text>

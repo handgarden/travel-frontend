@@ -669,13 +669,13 @@ const useAccommodationRepository = () => {
   const checkAuthByResponse = useCheckAuthByResponse();
 
   const repository = useMemo(
-    () => new Repository("/accommodations", checkAuthByResponse),
+    () => new Repository("/rooms", checkAuthByResponse),
     [checkAuthByResponse]
   );
 
   const getRoomsForReserve = useMemo(() => {
     return repository.createGet<RoomReserveType[], string, RoomDateQuery>(
-      "/{pv}"
+      "/destination/{pv}"
     );
   }, [repository]);
 
@@ -684,16 +684,16 @@ const useAccommodationRepository = () => {
       PaginationResponse<RoomType>,
       void,
       PaginationQuery
-    >("/rooms");
+    >("/producer");
   }, [repository]);
 
   const getRoom = useMemo(() => {
-    return repository.createGet<RoomType, number>("/rooms/{pv}");
+    return repository.createGet<RoomType, number>("/item/{pv}");
   }, [repository]);
 
   const createRoom = useMemo(() => {
-    return repository.createPost<CreateRoomForm, BASIC_SUCCESS_MESSAGE, number>(
-      "/{pv}"
+    return repository.createPost<CreateRoomForm, BASIC_SUCCESS_MESSAGE>(
+      "/item"
     );
   }, [repository]);
 
@@ -702,7 +702,7 @@ const useAccommodationRepository = () => {
       ReserveRoomForm,
       BASIC_SUCCESS_MESSAGE,
       number
-    >("/rooms/{pv}");
+    >("/item/{pv}");
   }, [repository]);
 
   const confirmOrder = useMemo(() => {
@@ -725,12 +725,12 @@ const useAccommodationRepository = () => {
     >("/orders");
   }, [repository]);
 
-  const getOrdersByRoom = useMemo(() => {
+  const getRoomOrdersByProducer = useMemo(() => {
     return repository.createGet<
       PaginationResponse<RoomOrderType>,
       number,
       PaginationQuery
-    >("/orders/rooms/{pv}");
+    >("/producer/{pv}");
   }, [repository]);
 
   const repo = useMemo(
@@ -743,14 +743,14 @@ const useAccommodationRepository = () => {
       getOrders,
       confirmOrder,
       cancelOrder,
-      getOrdersByRoom,
+      getOrdersByRoom: getRoomOrdersByProducer,
     }),
     [
       cancelOrder,
       confirmOrder,
       createRoom,
       getOrders,
-      getOrdersByRoom,
+      getRoomOrdersByProducer,
       getRoom,
       getRoomsByProducer,
       getRoomsForReserve,

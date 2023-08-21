@@ -2,14 +2,15 @@ import { PaymentMethodType } from "./Payment.type";
 
 export type RoomType = {
   id: number;
-  accommodationId: number;
-  accommodationName: string;
+  destinationId: number;
+  destinationName: string;
   name: string;
   price: number;
   inTime: string;
 };
 
 export type CreateRoomForm = {
+  destinationId: number;
   name: string;
   price: number;
   stock: number;
