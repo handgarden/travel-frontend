@@ -91,7 +91,11 @@ const AddForm: React.FC = () => {
       }
 
       window.alert("여행지를 추가했습니다.");
-      navigate(destinationPath[category.toUpperCase() as CategoryType]);
+      const path =
+        category.toUpperCase() === "ADD"
+          ? "/"
+          : destinationPath[category.toUpperCase() as CategoryType];
+      navigate(path);
     } catch (e) {}
   };
 
@@ -445,7 +449,6 @@ const DestinationList: React.FC<ListProps> = ({ category, forUser }) => {
       const data = paginationResponse.data.map((d) =>
         convertObjectIncludeCategory(d)
       );
-      console.log(data);
       setData(data);
       setTotal(paginationResponse.total);
     },
