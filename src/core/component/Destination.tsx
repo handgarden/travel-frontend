@@ -426,7 +426,7 @@ type QueryForm = {
 const DestinationList: React.FC<ListProps> = ({ category, forUser }) => {
   const [data, setData] = useState<DestinationType[]>([]);
 
-  const { DestinationRepository: repository, UserRepository } = useRepository();
+  const { DestinationRepository: repository } = useRepository();
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -435,7 +435,7 @@ const DestinationList: React.FC<ListProps> = ({ category, forUser }) => {
       setLoading(true);
       let response = null;
       if (forUser) {
-        response = await UserRepository.getUserDestinations({ query });
+        response = await repository.getUserDestinations({ query });
       } else {
         response = await repository.getDestinations({ query });
       }
@@ -452,7 +452,7 @@ const DestinationList: React.FC<ListProps> = ({ category, forUser }) => {
       setData(data);
       setTotal(paginationResponse.total);
     },
-    [UserRepository, forUser, repository]
+    [forUser, repository]
   );
 
   const [pagination, setPagination] = useState<PaginationQuery>({

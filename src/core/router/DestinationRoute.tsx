@@ -24,7 +24,7 @@ const DestinationRoute = () => {
           <Route
             key={c[1].type.toLocaleLowerCase()}
             path={destinationPath[c[1].type] + "/add"}
-            element={<DestinationPage.Add />}
+            element={<AuthGaurd element={<DestinationPage.Add />} />}
           />
         ))}
       {Object.entries(CATEGORY)

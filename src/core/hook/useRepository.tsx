@@ -277,57 +277,13 @@ const useUserRepository = () => {
     [repository]
   );
 
-  const getUserDestinations = useMemo(() => {
-    return repository.createGet<
-      PaginationResponse<DestinationResponse>,
-      undefined,
-      ItemListQuery
-    >("/destinations", true);
-  }, [repository]);
-
-  const getUserDescriptions = useMemo(() => {
-    return repository.createGet<
-      PaginationResponse<DescriptionType>,
-      undefined,
-      PaginationQuery
-    >("/descriptions");
-  }, [repository]);
-
-  const getUserJourneys = useMemo(() => {
-    return repository.createGet<
-      PaginationResponse<JourneyResponse>,
-      undefined,
-      PaginationQuery
-    >("/journeys");
-  }, [repository]);
-
-  const getUserComments = useMemo(() => {
-    return repository.createGet<
-      PaginationResponse<JourneyCommentType>,
-      undefined,
-      PaginationQuery
-    >("/comments");
-  }, [repository]);
-
   const repo = useMemo(
     () => ({
       getProfile,
       postNickname,
       postPassword,
-      getUserDescriptions,
-      getUserJourneys,
-      getUserComments,
-      getUserDestinations,
     }),
-    [
-      getProfile,
-      getUserComments,
-      getUserDescriptions,
-      getUserDestinations,
-      getUserJourneys,
-      postNickname,
-      postPassword,
-    ]
+    [getProfile, postNickname, postPassword]
   );
 
   return repo;
@@ -346,11 +302,14 @@ const useDestinationRepository = () => {
       PaginationResponse<DestinationResponse>,
       undefined,
       ItemListQuery
-    >("", true);
+    >("/item", true);
   }, [repository]);
 
   const getDestination = useMemo(() => {
-    return repository.createGet<DestinationResponse, string>("/{pv}", true);
+    return repository.createGet<DestinationResponse, string>(
+      "/item/{pv}",
+      true
+    );
   }, [repository]);
 
   const getDestinationThumbnails = useMemo(() => {
@@ -358,12 +317,14 @@ const useDestinationRepository = () => {
       PaginationResponse<StoreFileName>,
       string,
       PaginationQuery
-    >("/{pv}/thumbnails");
+    >("/item/{pv}/thumbnails");
   }, [repository]);
 
   const postDestination = useMemo(
     () =>
-      repository.createPost<CreateDestinationForm, BASIC_SUCCESS_MESSAGE>(""),
+      repository.createPost<CreateDestinationForm, BASIC_SUCCESS_MESSAGE>(
+        "/item"
+      ),
     [repository]
   );
 
@@ -372,7 +333,7 @@ const useDestinationRepository = () => {
       UpdateDestinationForm,
       BASIC_SUCCESS_MESSAGE,
       string
-    >("/{pv}");
+    >("/item/{pv}");
   }, [repository]);
 
   const deleteDestination = useCallback(
@@ -381,7 +342,7 @@ const useDestinationRepository = () => {
         const response = await repository
           .getHttpClient()
           .delete<void, AxiosResponse<ResponseTemplate<BASIC_SUCCESS_MESSAGE>>>(
-            `/destinations/${id}`,
+            `/destinations/item/${id}`,
             {
               headers: {
                 authorization: `bearer ${localStorage.getItem(JWT_KEY)}`,
@@ -398,6 +359,14 @@ const useDestinationRepository = () => {
     [checkAuthByResponse, repository]
   );
 
+  const getUserDestinations = useMemo(() => {
+    return repository.createGet<
+      PaginationResponse<DestinationResponse>,
+      undefined,
+      ItemListQuery
+    >("/user", true);
+  }, [repository]);
+
   const repo = useMemo(
     () => ({
       postDestination,
@@ -406,6 +375,7 @@ const useDestinationRepository = () => {
       getDestination,
       getDestinationThumnails: getDestinationThumbnails,
       getDestinations,
+      getUserDestinations,
     }),
     [
       postDestination,
@@ -414,6 +384,7 @@ const useDestinationRepository = () => {
       getDestination,
       getDestinationThumbnails,
       getDestinations,
+      getUserDestinations,
     ]
   );
 
@@ -429,7 +400,7 @@ const useDescriptionRepository = () => {
   );
 
   const postDescription = useMemo(() => {
-    return repository.createPost<DescriptionForm, DescriptionType>("");
+    return repository.createPost<DescriptionForm, DescriptionType>("/item");
   }, [repository]);
 
   const getDescriptions = useMemo(() => {
@@ -437,7 +408,15 @@ const useDescriptionRepository = () => {
       PaginationResponse<DescriptionType>,
       void,
       DescriptionQuery
-    >("");
+    >("/item");
+  }, [repository]);
+
+  const getUserDescriptions = useMemo(() => {
+    return repository.createGet<
+      PaginationResponse<DescriptionType>,
+      undefined,
+      PaginationQuery
+    >("/user");
   }, [repository]);
 
   const updateDescription = useMemo(() => {
@@ -445,7 +424,7 @@ const useDescriptionRepository = () => {
       DescriptionUpdateForm,
       DescriptionType,
       string
-    >("/{pv}");
+    >("/item/{pv}");
   }, [repository]);
 
   const deleteDescription = useCallback(
@@ -454,7 +433,7 @@ const useDescriptionRepository = () => {
         const response = await repository
           .getHttpClient()
           .delete<void, AxiosResponse<ResponseTemplate<BASIC_SUCCESS_MESSAGE>>>(
-            `/descriptions/${id}`,
+            `/descriptions/item/${id}`,
             {
               headers: {
                 authorization: `bearer ${localStorage.getItem(JWT_KEY)}`,
@@ -475,10 +454,17 @@ const useDescriptionRepository = () => {
     () => ({
       postDescription,
       getDescriptions,
+      getUserDescriptions,
       updateDescription,
       deleteDescription,
     }),
-    [deleteDescription, getDescriptions, postDescription, updateDescription]
+    [
+      deleteDescription,
+      getDescriptions,
+      getUserDescriptions,
+      postDescription,
+      updateDescription,
+    ]
   );
 
   return repo;
@@ -542,22 +528,30 @@ const useJourneyRepository = () => {
       PaginationResponse<JourneyResponse>,
       undefined,
       PaginationQuery
-    >("", false);
+    >("/item", false);
+  }, [repository]);
+
+  const getUserJourneys = useMemo(() => {
+    return repository.createGet<
+      PaginationResponse<JourneyResponse>,
+      undefined,
+      PaginationQuery
+    >("/user");
   }, [repository]);
 
   const getJourney = useMemo(() => {
-    return repository.createGet<JourneyResponse, string>("/{pv}", false);
+    return repository.createGet<JourneyResponse, string>("/item/{pv}", false);
   }, [repository]);
 
   const postJourney = useMemo(
-    () => repository.createPost<JourneyForm, BASIC_SUCCESS_MESSAGE>(""),
+    () => repository.createPost<JourneyForm, BASIC_SUCCESS_MESSAGE>("/item"),
     [repository]
   );
 
   const updateJourney = useMemo(
     () =>
       repository.createPost<JourneyForm, BASIC_SUCCESS_MESSAGE, string>(
-        "/{pv}"
+        "/item/{pv}"
       ),
     [repository]
   );
@@ -568,7 +562,7 @@ const useJourneyRepository = () => {
         const response = await repository
           .getHttpClient()
           .delete<void, AxiosResponse<ResponseTemplate<BASIC_SUCCESS_MESSAGE>>>(
-            `/journeys/${id}`,
+            `/journeys/item/${id}`,
             {
               headers: {
                 authorization: `bearer ${localStorage.getItem(JWT_KEY)}`,
@@ -593,7 +587,7 @@ const useJourneyRepository = () => {
       JourneyCommentForm,
       JourneyCommentType,
       string
-    >("/{pv}/comments");
+    >("/item/{pv}/comments");
   }, [repository]);
 
   const getComments = useMemo(() => {
@@ -601,7 +595,15 @@ const useJourneyRepository = () => {
       PaginationResponse<JourneyCommentType>,
       string,
       PaginationQuery
-    >("/{pv}/comments");
+    >("/item/{pv}/comments");
+  }, [repository]);
+
+  const getUserComments = useMemo(() => {
+    return repository.createGet<
+      PaginationResponse<JourneyCommentType>,
+      undefined,
+      PaginationQuery
+    >("/user/comments");
   }, [repository]);
 
   const updateComment = useMemo(() => {
@@ -609,7 +611,7 @@ const useJourneyRepository = () => {
       JourneyCommentUpdateForm,
       JourneyCommentType,
       string
-    >("/comments/{pv}");
+    >("/item/comments/{pv}");
   }, [repository]);
 
   const deleteComment = useCallback(
@@ -618,7 +620,7 @@ const useJourneyRepository = () => {
         const response = await repository
           .getHttpClient()
           .delete<void, AxiosResponse<ResponseTemplate<BASIC_SUCCESS_MESSAGE>>>(
-            `/journeys/comments/${id}`,
+            `/journeys/item/comments/${id}`,
             {
               headers: {
                 authorization: `bearer ${localStorage.getItem(JWT_KEY)}`,
@@ -639,24 +641,28 @@ const useJourneyRepository = () => {
     () => ({
       getJourneyContent,
       getAllJourney,
+      getUserJourneys,
       getJourney,
       postJourney,
       updateJourney,
       deleteJourney,
       postComment,
       getComments,
+      getUserComments,
       updateComment,
       deleteComment,
     }),
     [
       getJourneyContent,
       getAllJourney,
+      getUserJourneys,
       getJourney,
       postJourney,
       updateJourney,
       deleteJourney,
       postComment,
       getComments,
+      getUserComments,
       updateComment,
       deleteComment,
     ]

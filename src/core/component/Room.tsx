@@ -288,8 +288,8 @@ const Add: React.FC<AddProps> = ({ dataId, isOwner }) => {
             navigate("/login" + redirectPath);
             return;
           }
-          if (response.error.status === 409) {
-            setGlobalError("중복된 방이 존재합니다.");
+          if (response.error.status === 400) {
+            setGlobalError(response.error.message);
             return;
           }
           const bindingErr = response.error.bindingErrors;

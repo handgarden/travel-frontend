@@ -25,6 +25,20 @@ import PaymentMethod from "../component/PaymentMethod";
 import Order from "../component/Order";
 import Room from "../component/Room";
 
+type NoContentProps = {
+  data: any[];
+};
+
+const NoContent: React.FC<NoContentProps> = ({ data }) => {
+  if (data.length < 1) {
+    return (
+      <Typography.Title level={4}>{"데이터가 없습니다."}</Typography.Title>
+    );
+  }
+
+  return null;
+};
+
 const Profile: React.FC = () => {
   const { user, logout, updateNickname } = useContext(AuthContext);
 
@@ -82,7 +96,7 @@ const DescriptionPage: React.FC = () => {
 
   const redirectPath = useRedirectPath();
 
-  const { UserRepository } = useRepository();
+  const { DescriptionRepository } = useRepository();
 
   const [data, setData] = useState<DescriptionType[]>([]);
 
@@ -99,7 +113,7 @@ const DescriptionPage: React.FC = () => {
       if (!user) {
         return;
       }
-      const response = await UserRepository.getUserDescriptions({
+      const response = await DescriptionRepository.getUserDescriptions({
         query: pagination,
       });
       if (!response.success) {
@@ -110,7 +124,7 @@ const DescriptionPage: React.FC = () => {
       setData(data.data);
       setTotal(data.total);
     },
-    [UserRepository, user]
+    [DescriptionRepository, user]
   );
 
   useEffect(() => {
@@ -133,6 +147,7 @@ const DescriptionPage: React.FC = () => {
 
   return (
     <Space size="large" direction="vertical" style={{ width: "100%" }}>
+      <NoContent data={data} />
       {data.map((d) => (
         <Description.Elem
           key={d.id.toString()}
@@ -167,7 +182,7 @@ const DescriptionPage: React.FC = () => {
 const JourneyPage: React.FC = () => {
   const { user } = useAuth();
 
-  const { UserRepository } = useRepository();
+  const { JourneyRepository } = useRepository();
 
   const [total, setTotal] = useState<number>(0);
 
@@ -184,7 +199,7 @@ const JourneyPage: React.FC = () => {
         return;
       }
       //todo - nickname으로 변경 확인
-      const response = await UserRepository.getUserJourneys({
+      const response = await JourneyRepository.getUserJourneys({
         query: pagination,
       });
 
@@ -196,7 +211,7 @@ const JourneyPage: React.FC = () => {
       setData(data.data.map((d) => journeyResponseConverter(d)));
       setTotal(data.total);
     },
-    [UserRepository, user]
+    [JourneyRepository, user]
   );
 
   useEffect(() => {
@@ -214,6 +229,7 @@ const JourneyPage: React.FC = () => {
 
   return (
     <Space size="large" direction="vertical" style={{ width: "100%" }}>
+      <NoContent data={data} />
       {data.map((d) => (
         <Journey.Elem data={d} key={d.id.toString()} />
       ))}
@@ -232,7 +248,7 @@ const JourneyPage: React.FC = () => {
 const CommentPage: React.FC = () => {
   const { user } = useAuth();
 
-  const { UserRepository } = useRepository();
+  const { JourneyRepository } = useRepository();
 
   const [total, setTotal] = useState<number>(0);
 
@@ -249,7 +265,7 @@ const CommentPage: React.FC = () => {
         return;
       }
       //todo - 닉네임으로 변경 확인
-      const response = await UserRepository.getUserComments({
+      const response = await JourneyRepository.getUserComments({
         query: pagination,
       });
 
@@ -261,7 +277,7 @@ const CommentPage: React.FC = () => {
       setData(data.data);
       setTotal(data.total);
     },
-    [UserRepository, user]
+    [JourneyRepository, user]
   );
 
   useEffect(() => {
@@ -279,6 +295,7 @@ const CommentPage: React.FC = () => {
 
   return (
     <Space size="large" direction="vertical" style={{ width: "100%" }}>
+      <NoContent data={data} />
       {data.map((d) => (
         <Journey.CommentElem
           data={d}
