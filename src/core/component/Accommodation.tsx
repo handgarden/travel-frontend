@@ -4,10 +4,7 @@ import {
   DestinationResponse,
   DestinationType,
 } from "../../types/Destination.type";
-import {
-  ErrorResponse,
-  PaginationResponse,
-} from "../../types/repository/basic.type";
+import { ErrorResponse } from "../../types/repository/basic.type";
 import {
   convertObjectIncludeCategory,
   getCategoryColor,
@@ -51,18 +48,6 @@ const Detail: React.FC<DetailProps> = ({ dataId }) => {
   useEffect(() => {
     getDestination();
   }, [getDestination]);
-
-  const setImages = (images: PaginationResponse<string>) => {
-    setDestination((prev) => {
-      if (!prev) {
-        return prev;
-      }
-      return {
-        ...prev,
-        images: images,
-      };
-    });
-  };
 
   const title = useMemo(() => {
     if (!destination) {
@@ -163,13 +148,9 @@ const Detail: React.FC<DetailProps> = ({ dataId }) => {
           <Typography.Paragraph>{`주소: ${
             destination ? destination.address : ""
           }`}</Typography.Paragraph>
-          {/* {destination ? (
-            <Destination.ElementImages
-              id={destination.id}
-              images={destination.images}
-              setImages={setImages}
-            />
-          ) : null} */}
+          {destination ? (
+            <Destination.ElementImages id={destination.id} />
+          ) : null}
         </Space>
         <Divider />
         <Room.List dataId={dataId} isOwner={hasOwn} />
