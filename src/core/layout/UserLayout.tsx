@@ -5,7 +5,6 @@ import {
   DollarOutlined,
   AuditOutlined,
   UnorderedListOutlined,
-  UserSwitchOutlined,
 } from "@ant-design/icons";
 import {
   CommentOutlined,
